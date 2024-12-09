@@ -74,10 +74,10 @@ const Dex = ({ coins }) => {
     symbol: "TON",
   }); // State to store the selected token
   const [selectedCoin, setSelectedCoin] = useState({
-    contractAddress: "EQBlqsm144Dq6SjbPI4jjZvA1hqTIP3CvHovbIfW_t-SCALE",
-    imageUrl: "https://assets.dedust.io/images/scale.webp",
-    name: "Scaleton",
-    symbol: "SCALE",
+    contractAddress: "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT",
+    imageUrl: "https://assets.dedust.io/images/not.webp",
+    name: "Notcoin",
+    symbol: "NOT",
   });
   const [filteredCoins, setFilteredCoins] = useState(coins); // State to store filtered coins
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -512,177 +512,7 @@ const Dex = ({ coins }) => {
     onSecondModalClose(); // Close the modal
   };
 
-  // const swap = async (address, amount) => {
-  //   console.log("AMount", amount), console.log("ca", address);
-  //   const client = new TonClient4({
-  //     endpoint: "https://mainnet-v4.tonhubapi.com",
-  //   });
-  //   console.log("console log");
-  //   const factory = client.open(
-  //     Factory.createFromAddress(MAINNET_FACTORY_ADDR)
-  //   );
 
-  //   const contractAddress = Address.parse(address);
-
-  //   const jetton = client.open(JettonRoot.createFromAddress(contractAddress));
-
-  //   const pool = client.open(
-  //     Pool.createFromAddress(
-  //       await factory.getPoolAddress({
-  //         poolType: PoolType.VOLATILE,
-  //         assets: [Asset.native(), Asset.jetton(jetton.address)],
-  //       })
-  //     )
-  //   );
-
-  //   const nativeVault = client.open(
-  //     VaultNative.createFromAddress(
-  //       await factory.getVaultAddress(Asset.native())
-  //     )
-  //   );
-
-  //   const lastBlock = await client.getLastBlock();
-  //   const poolState = await client.getAccountLite(
-  //     lastBlock.last.seqno,
-  //     pool.address
-  //   );
-  //   if (poolState.account.state.type !== "active") {
-  //     throw new Error("Pool is not exist.");
-  //   }
-
-  //   const vaultState = await client.getAccountLite(
-  //     lastBlock.last.seqno,
-  //     nativeVault.address
-  //   );
-  //   if (vaultState.account.state.type !== "active") {
-  //     throw new Error("Native Vault is not exist.");
-  //   }
-
-  //   const amountIn = toNano(amount);
-
-  //   const { amountOut: expectedAmountOut } = await pool.getEstimatedSwapOut({
-  //     assetIn: Asset.native(),
-  //     amountIn,
-  //   });
-
-  //   // Slippage handling (1%)
-  //   const minAmountOut = (expectedAmountOut * 99n) / 100n; // expectedAmountOut - 1%
-  //   console.log(fromNano(minAmountOut));
-
-  //   await nativeVault.sendSwap(sender, {
-  //     poolAddress: pool.address,
-  //     amount: amountIn,
-  //     limit: minAmountOut,
-  //     gasAmount: toNano("0.25"),
-  //   });
-  // };
-
-  // const swapJettontoTon = async (from, amount) => {
-  //   console.log("Amount", amount);
-  //   console.log("fromAddress", from);
-  //   console.log("selectedToken", selectedToken);
-
-  //   const client = new TonClient4({
-  //     endpoint: "https://mainnet-v4.tonhubapi.com",
-  //   });
-
-  //   const factory = client.open(
-  //     Factory.createFromAddress(MAINNET_FACTORY_ADDR)
-  //   );
-
-  //   const fromAddress = Address.parse(from);
-
-  //   // Open the jetton vault
-  //   const jettonVault = client.open(await factory.getJettonVault(fromAddress));
-  //   const jettonRoot = client.open(JettonRoot.createFromAddress(fromAddress));
-  //   console.log(sender);
-  //   const jettonWallet = client.open(
-  //     await jettonRoot.getWallet(sender.address)
-  //   );
-
-  //   console.log(jettonWallet.address);
-  //   // Open the pool
-  //   const pool = client.open(
-  //     Pool.createFromAddress(
-  //       await factory.getPoolAddress({
-  //         poolType: PoolType.VOLATILE,
-  //         assets: [Asset.native(), Asset.jetton(jettonRoot.address)],
-  //       })
-  //     )
-  //   );
-
-  //   const amountIn = toNano(amount);
-
-  //   // Estimate the amount of TON to receive
-  //   const { amountOut: expectedAmountOut } = await pool.getEstimatedSwapOut({
-  //     assetIn: Asset.jetton(jettonRoot.address),
-  //     amountIn,
-  //   });
-
-  //   const minAmountOut = (expectedAmountOut * 99n) / 100n;
-  //   console.log("Expected Amount Out (TON):", fromNano(expectedAmountOut));
-  //   console.log("Min Amount Out (TON):", fromNano(minAmountOut));
-
-  //   // Sending the transfer from the Jetton Wallet to the Jetton Vault
-  //   await jettonWallet.sendTransfer(sender, toNano("0.185"), {
-  //     amount: amountIn,
-  //     destination: jettonVault.address,
-  //     responseAddress: sender.address,
-  //     forwardAmount: toNano("0.125"),
-  //     forwardPayload: VaultJetton.createSwapPayload({
-  //       poolAddress: pool.address,
-  //       limit: minAmountOut,
-  //     }),
-  //   });
-
-  //   console.log("Swap initiated from Jetton to TON");
-  // };
-
-  // const swapJettonToJetton = async(from, to, amount)=>{
-  //   console.log('Amount', amount);
-  //   console.log('fromAddress', from);
-
-  //   const client = new TonClient4({
-  //     endpoint: "https://mainnet-v4.tonhubapi.com",
-  //   });
-
-  //   const factory = client.open(
-  //     Factory.createFromAddress(MAINNET_FACTORY_ADDR)
-  //   );
-
-  //   const fromAddress = Address.parse(from);
-  //   const toAddress = Address.parse(to);
-
-  //   const fromAsset = Asset.jetton(fromAddress)
-  //   const TON = Asset.native()
-  //   const toAsset = Asset.jetton(toAddress)
-
-  // const TON_FROM = client.open(await factory.getPool(PoolType.VOLATILE, [TON, fromAsset]));
-  // const TON_TO = client.open(await factory.getPool(PoolType.VOLATILE, [TON, toAsset]));
-
-  //  const jettonVault = client.open(await factory.getJettonVault(fromAddress));
-  // const FromRoot = client.open(JettonRoot.createFromAddress(fromAddress));
-  // const FromWallet = client.open(await FromRoot.getWallet(sender.address));
-
-  // const amountIn = toNano(amount);
-
-  // FromWallet.sendTransfer(
-  //   sender,
-  //   toNano("0.265"),
-  //   {
-  //     amount: amountIn,
-  //     destination: jettonVault.address,
-  //     responseAddress: sender.address,
-  //     forwardAmount: toNano('0.215'),
-  //     forwardPayload: VaultJetton.createSwapPayload({
-  //       poolAddress: TON_FROM.address,
-  //       next:{
-  //         poolAddress: TON_TO.address
-  //       }
-  //     })
-  //   }
-  // )
-  // }
 
   const handleSwap = async () => {
     if (!connected) {
@@ -779,43 +609,63 @@ const Dex = ({ coins }) => {
     <Flex
       direction="column"
       minH="100vh"
-      bgColor="#0D0904"
+      bgColor="#04060d"
     >
-      <Flex justify="space-between" align="center" p="4">
-        <Box maxW="200px" maxH="50px">
-          <Image
-            src="/logo.png"
-            alt="Logo"
-            objectFit="contain"
-            width="50%"
-            height="50%"
-          />
-        </Box>
-        <Box
-          as="div"
-          className="ton-connect-button"
-          sx={{
-            display: "inline-block",
-            borderRadius: "10px",
-            border: "1px solid #FFFF6C",
-            background: "",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "background-color 0.3s",
-            "&:hover": {
-              backgroundColor: "#0D0904",
-              border: "2px solid white",
-            },
-            "& .ton-connect-button__icon": {
-              marginRight: "8px",
-            },
-          }}
-        >
-          <TonConnectButton />
-        </Box>
-      </Flex>
+    <Flex justify="space-between" align="center" p="4">
+  <Flex align="center"> {/* Adding a Flex container for logo and text */}
+    <Box
+      maxW="80px"
+      maxH="80px"
+      overflow="hidden"
+      borderRadius="lg"
+      boxShadow="md"
+      transition="transform 0.3s ease"
+    >
+      <Image
+        src="/tcandy.jpg"
+        alt="Logo"
+        objectFit="contain"
+        width="100%"
+        height="100%"
+        borderRadius="lg" // Keeps corners rounded
+        transition="transform 0.3s ease" // Smooth transition for hover effect
+        _hover={{ transform: "scale(1.1)" }} // Scale up on hover
+      />
+    </Box>
+    <Text
+      ml={2} // Margin-left for spacing between logo and text
+      fontSize="xl" // Adjust font size as needed
+      fontWeight="bold" // Bold text for emphasis
+      color="white" // Change as necessary for visibility
+    >
+      TSWAP
+    </Text>
+  </Flex>
+  <Box
+    as="div"
+    className="ton-connect-button"
+    sx={{
+      display: "inline-block",
+      borderRadius: "10px",
+      border: "1px solid #6cc9ff",
+      background: "",
+      color: "white",
+      fontSize: "16px",
+      fontWeight: "bold",
+      cursor: "pointer",
+      transition: "background-color 0.3s",
+      "&:hover": {
+        backgroundColor: "#0D0904",
+        border: "2px solid white",
+      },
+      "& .ton-connect-button__icon": {
+        marginRight: "8px",
+      },
+    }}
+  >
+    <TonConnectButton />
+  </Box>
+</Flex>
 
       <Flex
         direction="column"
@@ -824,24 +674,24 @@ const Dex = ({ coins }) => {
         minH="100vh"
         gap={5}
       >
-        <Flex
+        {/* <Flex
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
           justify={"end"}
           gap={5}
           p={3}
         >
-          <Icon as={LuRefreshCw} boxSize={6} color={"#FFFF6C"} />
-          <Icon as={GiSettingsKnobs} boxSize={6} color={"#FFFF6C"} />
-        </Flex>
+          <Icon as={LuRefreshCw} boxSize={6} color={"#6cc9ff"} />
+          <Icon as={GiSettingsKnobs} boxSize={6} color={"#6cc9ff"} />
+        </Flex> */}
         <Flex
           // justify="center"
           minH="75vh"
-          w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
+          w={useBreakpointValue({ base: "85%", medium: "85%", lg: "40vw" })}
           borderRadius="15px"
-          border="2px solid #FFFF6C"
+          border="2px solid #6cc9ff"
           direction={"column"}
           gap={1}
-          bg={"#D9D9D91A"}
+          bg={"#d9d9d91a"}
         >
           <Flex direction={"column"} w={"100%"} p={5} gap={2}>
             <Flex
@@ -856,7 +706,7 @@ const Dex = ({ coins }) => {
                 width={40}
                 height={40}
               />
-              <Text fontSize={"x-large"}>
+              <Text fontSize={"md"}>
                 {selectedToken ? selectedToken.symbol : "TON"}
               </Text>
               <Icon as={TriangleDownIcon} boxSize={3} />
@@ -865,7 +715,7 @@ const Dex = ({ coins }) => {
             <Input
               h={"10vh"}
               borderRadius={"10px"}
-              bg={"#3B3626"}
+              bg={"#262d3b"}
               border={"none"}
               type="number"
               color={"white"}
@@ -875,7 +725,7 @@ const Dex = ({ coins }) => {
           </Flex>
 
           <Flex
-            bg="#3B3626"
+            bg="#262d3b"
             borderRadius="50%"
             p={2}
             w={useColorModeValue({ base: "6vw", medium: "6vw", lg: "3vw" })}
@@ -887,7 +737,7 @@ const Dex = ({ coins }) => {
             <Icon
               as={MdOutlineKeyboardDoubleArrowDown}
               boxSize={6}
-              color={"#FFFF6C"}
+              color={"#6cc9ff"}
             />
           </Flex>
 
@@ -904,8 +754,9 @@ const Dex = ({ coins }) => {
                 width={40}
                 height={40}
               />
-              <Text fontSize={"x-large"}>
-                {selectedCoin ? selectedCoin.symbol : "NUT"}
+              <Text fontSize={"md"}>
+                {selectedCoin ? selectedCoin.symbol
+                 : "NUT"}
               </Text>
               <Icon as={TriangleDownIcon} boxSize={3} />
             </Flex>
@@ -913,7 +764,7 @@ const Dex = ({ coins }) => {
             <Input
               h={"10vh"}
               borderRadius={"10px"}
-              bg={"#3B3626"}
+              bg={"#262d3b"}
               border={"none"}
               type="number"
               color={"white"}
@@ -924,10 +775,10 @@ const Dex = ({ coins }) => {
           </Flex>
 
           <Flex
-            w={useBreakpointValue({ base: "93%", medium: "93%", lg: "27vw" })}
+            w={useBreakpointValue({ base: "93%", medium: "93%", lg: "30vw" })}
             alignSelf={"center"}
             borderRadius="10px"
-            border="1px solid #FFFF6C"
+            border="1px solid #6cc9ff"
             mb={3}
             direction={"column"}
             h={useColorModeValue({ base: "20vh", medium: "20vh", lg: "25vh" })}
@@ -936,8 +787,8 @@ const Dex = ({ coins }) => {
               <Text
                 textDecoration="underline"
                 textDecorationStyle="dotted"
-                textDecorationColor="#9D9463"
-                color="#9D9463"
+                textDecorationColor="#636e9d"
+                color="#636e9d"
               >
                 Rate
               </Text>
@@ -955,8 +806,8 @@ const Dex = ({ coins }) => {
               <Text
                 textDecoration="underline"
                 textDecorationStyle="dotted"
-                textDecorationColor="#9D9463"
-                color="#9D9463"
+                textDecorationColor="#636e9d"
+                color="#636e9d"
               >
                 Minimum Received
               </Text>
@@ -971,8 +822,8 @@ const Dex = ({ coins }) => {
               <Text
                 textDecoration="underline"
                 textDecorationStyle="dotted"
-                textDecorationColor="#9D9463"
-                color="#9D9463"
+                textDecorationColor="#636e9d"
+                color="#636e9d"
               >
                 Price Impact
               </Text>
@@ -984,8 +835,8 @@ const Dex = ({ coins }) => {
               <Text
                 textDecoration="underline"
                 textDecorationStyle="dotted"
-                textDecorationColor="#9D9463"
-                color="#9D9463"
+                textDecorationColor="#636e9d"
+                color="#636e9d"
               >
                 Tx Fee
               </Text>
@@ -996,12 +847,12 @@ const Dex = ({ coins }) => {
 
           <Button
             alignSelf={"center"}
-            w={useBreakpointValue({ base: "80%", medium: "80%", lg: "27vw" })}
+            w={useBreakpointValue({ base: "80%", medium: "80%", lg: "30vw" })}
             mb={4}
-            bgColor={"#FFFF6C"}
+            bgColor={"#6cc9ff"}
             h={"8vh"}
             borderRadius={"10px"}
-            _hover={{ bg: "#FFFF6C", opacity: 0.8 }}
+            _hover={{ bg: "#6cc9ff", opacity: 0.8 }}
             onClick={userAggregatorStatus ? handleSwap : initSwapAggregator}
             disabled={isLoading}
           >
@@ -1016,10 +867,10 @@ const Dex = ({ coins }) => {
             alignSelf={"center"}
             w={useBreakpointValue({ base: "80%", medium: "80%", lg: "27vw" })}
             mb={4}
-            bgColor={"#FFFF6C"}
+            bgColor={"#6cc9ff"}
             h={"8vh"}
             borderRadius={"10px"}
-            _hover={{ bg: "#FFFF6C", opacity: 0.8 }}
+            _hover={{ bg: "#6cc9ff", opacity: 0.8 }}
             onClick={withdrawJetton}
             disabled={isLoading}
           >
@@ -1033,19 +884,19 @@ const Dex = ({ coins }) => {
         <Flex
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
           borderRadius="15px"
-          border="2px solid #FFFF6C"
+          border="2px solid #6cc9ff"
           justifyContent={"space-between"}
           h={"15vh"}
           p={2}
         >
           <Flex gap={2} color={"white"} alignItems={"center"}>
             <Image src="/logoton.png" />
-            <Text fontSize={"x-large"}>TON</Text>
+            <Text fontSize={"lg"}>TON</Text>
             <Icon as={TriangleUpIcon} boxSize={3} color={"green.400"} />
           </Flex>
 
           <Flex gap={2} alignItems={"center"}>
-            <Text fontSize={"x-small"} color={"#9D9463"}>
+            <Text fontSize={"x-small"} color={"#636e9d"}>
               Price
             </Text>
             <Text fontSize={"larger"} color={"white"}>
@@ -1055,11 +906,13 @@ const Dex = ({ coins }) => {
         </Flex>
 
         <HStack mb={7}>
-          <Text color={"#9D9463"}>Built with love by </Text>
-          <Text color={"#9D9463"}>TCANDY</Text>
+          <Text color={"#636e9d"}>Built with love by </Text>
+          <Text color={"#636e9d"}>TCANDY</Text>
         </HStack>
       </Flex>
 
+
+      {/* MODAL FOR TOKENS */}
       <Modal
         isCentered
         onClose={onClose}
@@ -1085,7 +938,7 @@ const Dex = ({ coins }) => {
                     <SearchIcon />
                   </InputLeftElement>
                   <Input
-                    border="2px solid #FFFF6C"
+                    border="2px solid #6cc9ff"
                     placeholder="Search assets or address"
                     onChange={(e) => handleSearch(e.target.value)}
                   />
