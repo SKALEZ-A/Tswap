@@ -1055,8 +1055,8 @@ const Dex = ({ coins }) => {
         </Flex>
 
         <HStack mb={7}>
-          <Text color={"#9D9463"}>Built with precision by </Text>
-          <Text color={"#9D9463"}>TR300</Text>
+          <Text color={"#9D9463"}>Built with love by </Text>
+          <Text color={"#9D9463"}>TCANDY</Text>
         </HStack>
       </Flex>
 

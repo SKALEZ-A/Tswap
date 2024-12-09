@@ -5,7 +5,7 @@ import { ToastContainer } from "react-toastify";
 
 
 const manifestUrl =
-  "https://raw.githubusercontent.com/Draysongz/tr300/main/public/manifest.json";
+  "https://raw.githubusercontent.com/skalez-a/tswap/master/public/manifest.json";
 export default function App({ Component, pageProps }) {
   return (
     <>
