@@ -1,16 +1,18 @@
 import Head from "next/head";
 import { Inter } from "next/font/google";
+import LandingPage from "./components/LandingPage";
 import Dex from "./components/Dex";
 import { DeDustClient } from '@dedust/sdk';
 import { Spinner, Flex } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
- import 'react-toastify/dist/ReactToastify.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
   const [coins, setCoins] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showDex, setShowDex] = useState(false);
 
   const getPools = async () => {
     try {
@@ -60,31 +62,33 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>TSWAP</title>
+        <title>CANDYSWAP</title>
         <meta name="description" content="A dex built with precision by TCANDY." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-           {loading ? (
-        <Flex
-          height="100vh"
-          alignItems="center"
-          justifyContent="center"
-        >
-          <Spinner
-            thickness="4px"
-            speed="0.65s"
-            emptyColor="gray.200"
-            color="blue.500"
-            size="xl"
-          />
-        </Flex>
-      ) : (
-        
-          <Dex coins={coins} />
-        
-      )}
+        {showDex ? (
+          loading ? (
+            <Flex
+              height="100vh"
+              alignItems="center"
+              justifyContent="center"
+            >
+              <Spinner
+                thickness="4px"
+                speed="0.65s"
+                emptyColor="gray.200"
+                color="blue.500"
+                size="xl"
+              />
+            </Flex>
+          ) : (
+            <Dex coins={coins} />
+          )
+        ) : (
+          <LandingPage />
+        )}
       </main>
     </>
   );

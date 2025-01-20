@@ -609,7 +609,7 @@ const Dex = ({ coins }) => {
     <Flex
       direction="column"
       minH="100vh"
-      bgColor="#04060d"
+      bgColor="rgba(0, 24, 19, 1)"
     >
     <Flex justify="space-between" align="center" p="4">
   <Flex align="center"> {/* Adding a Flex container for logo and text */}
@@ -638,7 +638,7 @@ const Dex = ({ coins }) => {
       fontWeight="bold" // Bold text for emphasis
       color="white" // Change as necessary for visibility
     >
-      TSWAP
+      CANDYSWAP
     </Text>
   </Flex>
   <Box
@@ -647,7 +647,7 @@ const Dex = ({ coins }) => {
     sx={{
       display: "inline-block",
       borderRadius: "10px",
-      border: "1px solid #6cc9ff",
+      border: "1px solid #357930",
       background: "",
       color: "white",
       fontSize: "16px",
@@ -680,15 +680,15 @@ const Dex = ({ coins }) => {
           gap={5}
           p={3}
         >
-          <Icon as={LuRefreshCw} boxSize={6} color={"#6cc9ff"} />
-          <Icon as={GiSettingsKnobs} boxSize={6} color={"#6cc9ff"} />
+          <Icon as={LuRefreshCw} boxSize={6} color={"#357930"} />
+          <Icon as={GiSettingsKnobs} boxSize={6} color={"#357930"} />
         </Flex> */}
         <Flex
           // justify="center"
-          minH="75vh"
+          minH="40vh"
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "40vw" })}
           borderRadius="15px"
-          border="2px solid #6cc9ff"
+          border="2px solid #357930"
           direction={"column"}
           gap={1}
           bg={"#d9d9d91a"}
@@ -715,7 +715,7 @@ const Dex = ({ coins }) => {
             <Input
               h={"10vh"}
               borderRadius={"10px"}
-              bg={"#262d3b"}
+              bg={"rgba(0, 24, 19, 1)"}
               border={"none"}
               type="number"
               color={"white"}
@@ -725,7 +725,7 @@ const Dex = ({ coins }) => {
           </Flex>
 
           <Flex
-            bg="#262d3b"
+            bg="rgba(0, 24, 19, 1)"
             borderRadius="50%"
             p={2}
             w={useColorModeValue({ base: "6vw", medium: "6vw", lg: "3vw" })}
@@ -737,7 +737,7 @@ const Dex = ({ coins }) => {
             <Icon
               as={MdOutlineKeyboardDoubleArrowDown}
               boxSize={6}
-              color={"#6cc9ff"}
+              color={"#357930"}
             />
           </Flex>
 
@@ -764,7 +764,7 @@ const Dex = ({ coins }) => {
             <Input
               h={"10vh"}
               borderRadius={"10px"}
-              bg={"#262d3b"}
+              bg={"rgba(0, 24, 19, 1)"}
               border={"none"}
               type="number"
               color={"white"}
@@ -778,7 +778,7 @@ const Dex = ({ coins }) => {
             w={useBreakpointValue({ base: "93%", medium: "93%", lg: "30vw" })}
             alignSelf={"center"}
             borderRadius="10px"
-            border="1px solid #6cc9ff"
+            border="1px solid #357930"
             mb={3}
             direction={"column"}
             h={useColorModeValue({ base: "20vh", medium: "20vh", lg: "25vh" })}
@@ -849,10 +849,10 @@ const Dex = ({ coins }) => {
             alignSelf={"center"}
             w={useBreakpointValue({ base: "80%", medium: "80%", lg: "30vw" })}
             mb={4}
-            bgColor={"#6cc9ff"}
+            bgColor={"#357930"}
             h={"8vh"}
             borderRadius={"10px"}
-            _hover={{ bg: "#6cc9ff", opacity: 0.8 }}
+            _hover={{ bg: "#357930", opacity: 0.8 }}
             onClick={userAggregatorStatus ? handleSwap : initSwapAggregator}
             disabled={isLoading}
           >
@@ -867,10 +867,10 @@ const Dex = ({ coins }) => {
             alignSelf={"center"}
             w={useBreakpointValue({ base: "80%", medium: "80%", lg: "27vw" })}
             mb={4}
-            bgColor={"#6cc9ff"}
+            bgColor={"#357930"}
             h={"8vh"}
             borderRadius={"10px"}
-            _hover={{ bg: "#6cc9ff", opacity: 0.8 }}
+            _hover={{ bg: "#357930", opacity: 0.8 }}
             onClick={withdrawJetton}
             disabled={isLoading}
           >
@@ -884,7 +884,7 @@ const Dex = ({ coins }) => {
         <Flex
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
           borderRadius="15px"
-          border="2px solid #6cc9ff"
+          border="2px solid #357930"
           justifyContent={"space-between"}
           h={"15vh"}
           p={2}
@@ -938,7 +938,7 @@ const Dex = ({ coins }) => {
                     <SearchIcon />
                   </InputLeftElement>
                   <Input
-                    border="2px solid #6cc9ff"
+                    border="2px solid #357930"
                     placeholder="Search assets or address"
                     onChange={(e) => handleSearch(e.target.value)}
                   />
