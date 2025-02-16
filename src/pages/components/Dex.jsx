@@ -512,8 +512,6 @@ const Dex = ({ coins }) => {
     onSecondModalClose(); // Close the modal
   };
 
-
-
   const handleSwap = async () => {
     if (!connected) {
       toast.error("Please connect wallet");
@@ -606,66 +604,64 @@ const Dex = ({ coins }) => {
   // }
 
   return (
-    <Flex
-      direction="column"
-      minH="100vh"
-      bgColor="rgba(0, 24, 19, 1)"
-    >
-    <Flex justify="space-between" align="center" p="4">
-  <Flex align="center"> {/* Adding a Flex container for logo and text */}
-    <Box
-      maxW="80px"
-      maxH="80px"
-      overflow="hidden"
-      borderRadius="lg"
-      boxShadow="md"
-      transition="transform 0.3s ease"
-    >
-      <Image
-        src="/tcandy.jpg"
-        alt="Logo"
-        objectFit="contain"
-        width="100%"
-        height="100%"
-        borderRadius="lg" // Keeps corners rounded
-        transition="transform 0.3s ease" // Smooth transition for hover effect
-        _hover={{ transform: "scale(1.1)" }} // Scale up on hover
-      />
-    </Box>
-    <Text
-      ml={2} // Margin-left for spacing between logo and text
-      fontSize="xl" // Adjust font size as needed
-      fontWeight="bold" // Bold text for emphasis
-      color="white" // Change as necessary for visibility
-    >
-      CANDYSWAP
-    </Text>
-  </Flex>
-  <Box
-    as="div"
-    className="ton-connect-button"
-    sx={{
-      display: "inline-block",
-      borderRadius: "10px",
-      border: "1px solid #357930",
-      background: "",
-      color: "white",
-      fontSize: "16px",
-      fontWeight: "bold",
-      cursor: "pointer",
-      transition: "background-color 0.3s",
-      "&:hover": {
-        backgroundColor: "#0D0904",
-        border: "2px solid white",
-      },
-      "& .ton-connect-button__icon": {
-        marginRight: "8px",
-      },
-    }}
-  >
-    <TonConnectButton />
-  </Box>
-</Flex>
+    <Flex direction="column" minH="100vh" bgColor="rgba(0, 24, 19, 1)">
+      <Flex justify="space-between" align="center" p="4">
+        <Flex align="center">
+          {" "}
+          {/* Adding a Flex container for logo and text */}
+          <Box
+            maxW="80px"
+            maxH="60px"
+            overflow="hidden"
+            borderRadius="lg"
+            boxShadow="md"
+            transition="transform 0.3s ease"
+          >
+            <Image
+              src="/tcandy.jpg"
+              alt="Logo"
+              objectFit="contain"
+              width="100%"
+              height="60px"
+              borderRadius="lg" // Keeps corners rounded
+              transition="transform 0.3s ease" // Smooth transition for hover effect
+              _hover={{ transform: "scale(1.1)" }} // Scale up on hover
+            />
+          </Box>
+          <Text
+            ml={2} // Margin-left for spacing between logo and text
+            fontSize="xl" // Adjust font size as needed
+            fontWeight="bold" // Bold text for emphasis
+            color="white" // Change as necessary for visibility
+          >
+            CANDYSWAP
+          </Text>
+        </Flex>
+        <Box
+          as="div"
+          className="ton-connect-button"
+          sx={{
+            display: "inline-block",
+            borderRadius: "10px",
+            border: "1px solid #357930",
+            background: "",
+            color: "white",
+            fontSize: "16px",
+            fontWeight: "bold",
+            cursor: "pointer",
+            transition: "background-color 0.3s",
+            "&:hover": {
+              backgroundColor: "#0D0904",
+              border: "2px solid white",
+            },
+            "& .ton-connect-button__icon": {
+              marginRight: "8px",
+            },
+          }}
+        >
+          <TonConnectButton />
+        </Box>
+      </Flex>
 
       <Flex
         direction="column"
@@ -688,42 +684,85 @@ const Dex = ({ coins }) => {
           minH="40vh"
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "40vw" })}
           borderRadius="15px"
-          border="2px solid #357930"
+         
+          paddingX={4}
+          paddingTop={4}
           direction={"column"}
           gap={1}
           bg={"#d9d9d91a"}
         >
-          <Flex direction={"column"} w={"100%"} p={5} gap={2}>
+          <Flex
+            w={"100%"}
+            bg={"rgba(0, 24, 19, 1)"}
+            direction={"column"}
+            padding={2}
+            borderRadius={"20px"}
+          >
+            <Text fontSize="md" color="#C0C0C0" paddingLeft={4}>
+              You Will Pay
+            </Text>
             <Flex
-              gap={2}
-              color={"white"}
-              alignItems={"center"}
-              cursor={"pointer"}
-              onClick={onOpen}
-            >
-              <img
-                src={selectedToken ? selectedToken.imageUrl : "/logoton.png"}
-                width={40}
-                height={40}
-              />
-              <Text fontSize={"md"}>
-                {selectedToken ? selectedToken.symbol : "TON"}
-              </Text>
-              <Icon as={TriangleDownIcon} boxSize={3} />
-            </Flex>
-
-            <Input
+              w={"100%"}
+              p={5}
+              bg={""}
+              padding={2}
               h={"10vh"}
-              borderRadius={"10px"}
-              bg={"rgba(0, 24, 19, 1)"}
-              border={"none"}
-              type="number"
-              color={"white"}
-              value={amount}
-              onChange={handleAmountChange}
-            />
-          </Flex>
+              borderRadius={"20px"}
+            >
+              <Flex
+                gap={2}
+                color={"white"}
+                order={2}
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={onOpen}
+                borderRadius={"40px"} // Add border radius
+                width={"120px"} // Adjust width as needed
+                backgroundColor={"#000"} // Set background color
+                padding={2} //
+                h={"7vh"}
+              >
+                <Box
+                  width="35px"
+                  height="35px"
+                  borderRadius="full"
+                  overflow="hidden"
+                >
+                  <img
+                    src={
+                      selectedToken ? selectedToken.imageUrl : "/logoton.png"
+                    }
+                    width={40}
+                    height={40}
+                  />
+                </Box>
+                <Text fontSize={"md"}>
+                  {selectedToken ? selectedToken.symbol : "TON"}
+                </Text>
+                <Icon as={TriangleDownIcon} boxSize={3} />
+              </Flex>
 
+              <Input
+                h={"10vh"}
+                order={1}
+                borderRadius={"10px"}
+                bg={"rgba(0, 24, 19, 1)"}
+                border={"none"}
+                type="number"
+                color={"white"}
+                placeholder={Number(0)}
+                fontSize="xxx-large"
+                value={amount}
+                onChange={handleAmountChange}
+                focusBorderColor="transparent" // Removes default focus border
+                _focus={{
+                  outline: "none",
+                  border: "none",
+                  boxShadow: "none", // Ensures no glow effect
+                }}
+              />
+            </Flex>
+          </Flex>
           <Flex
             bg="rgba(0, 24, 19, 1)"
             borderRadius="50%"
@@ -741,54 +780,85 @@ const Dex = ({ coins }) => {
             />
           </Flex>
 
-          <Flex direction={"column"} w={"100%"} p={5} gap={2}>
+          <Flex
+            w={"100%"}
+            bg={"rgba(0, 24, 19, 1)"}
+            direction={"column"}
+            padding={2}
+            borderRadius={"20px"}
+          >
+            <Text fontSize="md" color="#C0C0C0" paddingLeft={4}>
+              You Will Receive
+            </Text>
             <Flex
-              gap={2}
-              color={"white"}
-              alignItems={"center"}
-              cursor={"pointer"}
-              onClick={onSecondModalOpen}
-            >
-              <img
-                src={selectedCoin ? selectedCoin.imageUrl : "/nut.png"}
-                width={40}
-                height={40}
-              />
-              <Text fontSize={"md"}>
-                {selectedCoin ? selectedCoin.symbol
-                 : "NUT"}
-              </Text>
-              <Icon as={TriangleDownIcon} boxSize={3} />
-            </Flex>
-
-            <Input
+              w={"100%"}
+              p={5}
+              bg={""}
+              padding={2}
               h={"10vh"}
-              borderRadius={"10px"}
-              bg={"rgba(0, 24, 19, 1)"}
-              border={"none"}
-              type="number"
-              color={"white"}
-              value={amountOut}
-              placeholder={Number(0)}
-              readOnly
-            />
+              borderRadius={"20px"}
+            >
+              <Flex
+                order={2}
+                gap={1}
+                color={"white"}
+                alignItems={"center"}
+                cursor={"pointer"}
+                onClick={onSecondModalOpen}
+                borderRadius={"40px"} // Add border radius
+                width={"120px"} // Adjust width as needed
+                backgroundColor={"#000"} // Set background color
+                padding={2} //
+                h={"7vh"}
+              >
+                <Box
+                  width="35px"
+                  height="35px"
+                  borderRadius="full"
+                  overflow="hidden"
+                >
+                  <img
+                    src={selectedCoin ? selectedCoin.imageUrl : "/nut.png"}
+                    width={35}
+                    height={35}
+                  />
+                </Box>
+                <Text fontSize={"md"}>
+                  {selectedCoin ? selectedCoin.symbol : "NUT"}
+                </Text>
+                <Icon as={TriangleDownIcon} boxSize={3} />
+              </Flex>
+
+              <Input
+                order={1}
+                h={"7vh"}
+                w={"90%"}
+                borderRadius={"10px"}
+                //bg={"rgba(0, 24, 19, 1)"}
+                border={"none"}
+                type="number"
+                color={"white"}
+                value={amountOut}
+                placeholder={Number(0)}
+                fontSize="xxx-large"
+                readOnly
+              />
+            </Flex>
           </Flex>
 
           <Flex
-            w={useBreakpointValue({ base: "93%", medium: "93%", lg: "30vw" })}
+            w={useBreakpointValue({ base: "100%", medium: "100%", lg: "100%" })}
             alignSelf={"center"}
             borderRadius="10px"
-            border="1px solid #357930"
+          
             mb={3}
             direction={"column"}
             h={useColorModeValue({ base: "20vh", medium: "20vh", lg: "25vh" })}
           >
             <HStack p={2}>
               <Text
-                textDecoration="underline"
-                textDecorationStyle="dotted"
-                textDecorationColor="#636e9d"
-                color="#636e9d"
+              
+                color="#4CA947"
               >
                 Rate
               </Text>
@@ -804,10 +874,7 @@ const Dex = ({ coins }) => {
 
             <HStack p={2}>
               <Text
-                textDecoration="underline"
-                textDecorationStyle="dotted"
-                textDecorationColor="#636e9d"
-                color="#636e9d"
+                color="#4CA947"
               >
                 Minimum Received
               </Text>
@@ -820,10 +887,7 @@ const Dex = ({ coins }) => {
 
             <HStack p={2}>
               <Text
-                textDecoration="underline"
-                textDecorationStyle="dotted"
-                textDecorationColor="#636e9d"
-                color="#636e9d"
+               color="#4CA947"
               >
                 Price Impact
               </Text>
@@ -833,10 +897,7 @@ const Dex = ({ coins }) => {
 
             <HStack p={2}>
               <Text
-                textDecoration="underline"
-                textDecorationStyle="dotted"
-                textDecorationColor="#636e9d"
-                color="#636e9d"
+               color="#4CA947"
               >
                 Tx Fee
               </Text>
@@ -849,7 +910,7 @@ const Dex = ({ coins }) => {
             alignSelf={"center"}
             w={useBreakpointValue({ base: "80%", medium: "80%", lg: "30vw" })}
             mb={4}
-            bgColor={"#357930"}
+            bgColor={"#4CA947"}
             h={"8vh"}
             borderRadius={"10px"}
             _hover={{ bg: "#357930", opacity: 0.8 }}
@@ -863,7 +924,7 @@ const Dex = ({ coins }) => {
               : "Initialize"}
           </Button>
 
-              {/* <Button
+          {/* <Button
             alignSelf={"center"}
             w={useBreakpointValue({ base: "80%", medium: "80%", lg: "27vw" })}
             mb={4}
@@ -878,15 +939,14 @@ const Dex = ({ coins }) => {
               ? "Loading..."
               : 'Withdraw Jettons'}
           </Button> */}
-          
         </Flex>
 
         <Flex
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
           borderRadius="15px"
-          border="2px solid #357930"
+        
           justifyContent={"space-between"}
-          h={"15vh"}
+          // h={"15vh"}
           p={2}
         >
           <Flex gap={2} color={"white"} alignItems={"center"}>
@@ -910,7 +970,6 @@ const Dex = ({ coins }) => {
           <Text color={"#636e9d"}>TCANDY</Text>
         </HStack>
       </Flex>
-
 
       {/* MODAL FOR TOKENS */}
       <Modal
