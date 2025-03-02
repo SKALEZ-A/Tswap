@@ -11,10 +11,16 @@ import {
   Link,
   useDisclosure,
   Image,
+  VStack, SimpleGrid
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import FeaturesSection from "./Features";
+import AboutSection from "./About";
+import Testimonials from "./Testimonials";
+import DownloadSection from "./DownloadSection";
+import Background from "./background";
 
 const MotionBox = motion(Box);
 const MotionFlex = motion(Flex);
@@ -24,6 +30,8 @@ const Navbar = () => {
   const router = useRouter();
 
   return (
+    <>
+    
     <Box position="fixed" top={0} left={0} right={0} zIndex={10} px={4}>
       <Container maxW="container.xl">
         <Flex py={4} justify="space-between" align="center">
@@ -54,7 +62,7 @@ const Navbar = () => {
           </Box>
         </Flex>
 
-        {/* Mobile menu */}
+      
         <Box
           display={{ base: isOpen ? "block" : "none", md: "none" }}
           pb={4}
@@ -71,11 +79,12 @@ const Navbar = () => {
               Docs
             </Link>
             <Button
-              m={4}
-              bg="rgba(164, 255, 237, 1)"
-              color="black"
-              _hover={{ bg: "rgba(164, 255, 237, 0.8)" }}
+              size="lg"
+              bg="#357930"
+              color="white"
+              _hover={{ bg: "#357930" }}
               borderRadius="full"
+              px={8}
               onClick={() => router.push("/dex")}
             >
               Launch App
@@ -84,6 +93,12 @@ const Navbar = () => {
         </Box>
       </Container>
     </Box>
+    
+
+    </>
+
+
+
   );
 };
 
@@ -202,46 +217,13 @@ export default function LandingPage() {
       color="white"
       position="relative"
       overflow="hidden"
+      zIndex={1}
     >
       <Navbar />
 
-      {/* Floating Elements */}
-      <FloatingElement top="20%" left="10%">
-        <Box
-          w="150px"
-          h="150px"
-          bg="rgba(164, 255, 237, 0.1)"
-          borderRadius="full"
-          filter="blur(40px)"
-        />
-      </FloatingElement>
-      <FloatingElement bottom="30%" right="15%">
-        <Box
-          w="200px"
-          h="200px"
-          bg="rgba(164, 255, 237, 0.15)"
-          borderRadius="full"
-          filter="blur(60px)"
-        />
-      </FloatingElement>
-      <FloatingElement top="60%" left="20%">
-        <Box
-          w="180px"
-          h="180px"
-          bg="rgba(164, 255, 237, 0.12)"
-          borderRadius="full"
-          filter="blur(50px)"
-        />
-      </FloatingElement>
-
-      {/* Floating Images */}
-      {floatingImages.map((img, index) => (
-        <FloatingImage
-          key={index}
-          src={img.src}
-          initialPosition={img.pos}
-        />
-      ))}
+   
+      <Box maxW="95%" mx="auto" px={6} zIndex={1} position="relative">
+        <Background/>
 
       <Container maxW="container.xl" centerContent>
         <MotionFlex
@@ -279,9 +261,9 @@ export default function LandingPage() {
           <HStack spacing={4}>
             <Button
               size="lg"
-              bg="rgba(164, 255, 237, 1)"
-              color="black"
-              _hover={{ bg: "rgba(164, 255, 237, 0.8)" }}
+              bg="#357930"
+              color="white"
+              _hover={{ bg: "#357930" }}
               borderRadius="full"
               px={8}
               onClick={() => router.push("/dex")}
@@ -291,9 +273,9 @@ export default function LandingPage() {
             <Button
               size="lg"
               variant="outline"
-              borderColor="rgba(164, 255, 237, 1)"
-              color="rgba(164, 255, 237, 1)"
-              _hover={{ bg: "rgba(164, 255, 237, 0.1)" }}
+              borderColor="#357930"
+              color="#357930"
+              _hover={{ bg: "#2d6627", color: "white" }}
               borderRadius="full"
               px={8}
             >
@@ -302,7 +284,12 @@ export default function LandingPage() {
           </HStack>
         </MotionFlex>
       </Container>
-
+    
+  <FeaturesSection />
+  <AboutSection />
+  <Testimonials />
+  <DownloadSection />
+</Box>
       <Footer />
     </Box>
   );

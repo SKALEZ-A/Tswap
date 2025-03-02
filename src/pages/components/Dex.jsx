@@ -680,7 +680,11 @@ const Dex = ({ coins }) => {
           <Icon as={GiSettingsKnobs} boxSize={6} color={"#357930"} />
         </Flex> */}
         <Flex
-          // justify="center"
+          boxShadow="0 0 25px 10px #357930"
+          _hover={{
+            boxShadow: "0 0 35px 15px #357930",
+          }}
+          transition="box-shadow 0.3s ease-in-out"
           minH="40vh"
           w={useBreakpointValue({ base: "85%", medium: "85%", lg: "40vw" })}
           borderRadius="15px"
@@ -853,9 +857,10 @@ const Dex = ({ coins }) => {
           
             mb={3}
             direction={"column"}
+            gap={2}
             h={useColorModeValue({ base: "20vh", medium: "20vh", lg: "25vh" })}
           >
-            <HStack p={2}>
+            <HStack >
               <Text
               
                 color="#4CA947"
@@ -863,7 +868,7 @@ const Dex = ({ coins }) => {
                 Rate
               </Text>
               <Spacer />
-              <Text color={"white"}>
+              <Text color={"gray"}>
                 {selectedToken ? `1 ${selectedToken.symbol}` : null} ={" "}
                 {fromTokenPrice &&
                   toTokenPrice &&
@@ -872,38 +877,61 @@ const Dex = ({ coins }) => {
               </Text>
             </HStack>
 
-            <HStack p={2}>
+            <HStack >
               <Text
                 color="#4CA947"
               >
                 Minimum Received
               </Text>
               <Spacer />
-              <Text color={"white"}>
+              <Text color={"gray"}>
                 {" "}
                 {selectedCoin && `${amountOut} ${selectedCoin.symbol}`}
               </Text>
             </HStack>
 
-            <HStack p={2}>
+            <HStack >
               <Text
                color="#4CA947"
               >
                 Price Impact
               </Text>
               <Spacer />
-              <Text color={"white"}> {`<${priceImpact.toFixed(2)}% `}</Text>
+              <Text color={"gray"}> {`<${priceImpact.toFixed(2)}% `}</Text>
             </HStack>
 
-            <HStack p={2}>
+            <HStack >
               <Text
                color="#4CA947"
               >
                 Tx Fee
               </Text>
               <Spacer />
-              <Text color={"white"}> 0.2 - 0.05</Text>
+              <Text color={"gray"}> 0.2 - 0.05</Text>
             </HStack>
+            <Flex
+        
+      
+        
+          justifyContent={"space-between"}
+     
+          
+        >
+          <Flex gap={2} color={"white"} alignItems={"center"}>
+         
+            <Text fontSize={"sm"}>TON</Text>
+            <Icon as={TriangleUpIcon} boxSize={3} color={"green.400"} />
+          </Flex>
+
+          <Flex gap={2} alignItems={"center"}>
+            <Text fontSize={"x-small"} color={"#636e9d"}>
+              Price
+            </Text>
+            <Text fontSize={"sm"} color={"white"}>
+              {tonPrice && `$ ${tonPrice}`}
+            </Text>
+          </Flex>
+        </Flex>
           </Flex>
 
           <Button
@@ -941,29 +969,7 @@ const Dex = ({ coins }) => {
           </Button> */}
         </Flex>
 
-        <Flex
-          w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
-          borderRadius="15px"
-        
-          justifyContent={"space-between"}
-          // h={"15vh"}
-          p={2}
-        >
-          <Flex gap={2} color={"white"} alignItems={"center"}>
-            <Image src="/logoton.png" />
-            <Text fontSize={"lg"}>TON</Text>
-            <Icon as={TriangleUpIcon} boxSize={3} color={"green.400"} />
-          </Flex>
-
-          <Flex gap={2} alignItems={"center"}>
-            <Text fontSize={"x-small"} color={"#636e9d"}>
-              Price
-            </Text>
-            <Text fontSize={"larger"} color={"white"}>
-              {tonPrice && `$ ${tonPrice}`}
-            </Text>
-          </Flex>
-        </Flex>
+       
 
         <HStack mb={7}>
           <Text color={"#636e9d"}>Built with love by </Text>

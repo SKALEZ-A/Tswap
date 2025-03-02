@@ -2,6 +2,7 @@ import Dex from "./components/Dex";
 import { useState, useEffect } from "react";
 import { Spinner, Flex } from "@chakra-ui/react";
 import { DeDustClient } from '@dedust/sdk';
+import CircularText from "./components/Preloader";
 
 export default function DexPage() {
   const [coins, setCoins] = useState(null);
@@ -56,6 +57,9 @@ export default function DexPage() {
           height="100vh"
           alignItems="center"
           justifyContent="center"
+        bg={"#000000"}
+        
+          
         >
           <Spinner
             thickness="4px"
@@ -64,7 +68,9 @@ export default function DexPage() {
             color="blue.500"
             size="xl"
           />
-        </Flex>
+        // </Flex>
+
+        // <CircularText/>
       ) : (
         <Dex coins={coins} />
       )}
