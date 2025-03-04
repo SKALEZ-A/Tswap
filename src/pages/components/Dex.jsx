@@ -212,12 +212,15 @@ const Dex = ({ coins }) => {
     }
   };
   const fetchEquivalentAmount = async (fromAddress, toAddress, amount) => {
-    console.log("toaddress", toAddress);
-    if (Number(amount) <= 0) return;
+    if (!fromAddress || !toAddress || !amount) return;
+  
     try {
-      let fromTokenData;
-      let toTokenData;
-
+      let fromTokenData, toTokenData;
+      fromTokenData = await fetchTokenDetails(fromAddress);
+      toTokenData = await fetchTokenDetails(toAddress);
+  
+      if (!fromTokenData || !toTokenData) return;
+  
       if (selectedToken.symbol === "TON") {
         fromTokenData = await fetchTonPrice();
         toTokenData = await fetchTokenDetails(toAddress);

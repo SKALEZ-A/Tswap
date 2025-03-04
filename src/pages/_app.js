@@ -2,13 +2,13 @@ import "@/styles/globals.css";
 import { ChakraProvider } from "@chakra-ui/react";
 import { TonConnectUIProvider, THEME } from "@tonconnect/ui-react";
 import { ToastContainer } from "react-toastify";
-
+import ErrorBoundary from "./components/ErrorBoundry";
 
 const manifestUrl =
   "https://raw.githubusercontent.com/skalez-a/tswap/master/public/manifest.json";
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <ErrorBoundary>
      <TonConnectUIProvider 
      manifestUrl={manifestUrl} 
      uiPreferences={{
@@ -29,6 +29,6 @@ export default function App({ Component, pageProps }) {
     <ToastContainer />
     </ChakraProvider>
     </TonConnectUIProvider>
-    </>
+    </ErrorBoundary>
   );
 }

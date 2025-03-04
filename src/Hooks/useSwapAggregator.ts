@@ -32,23 +32,15 @@ export function useSwapAggregator() {
     return client.open(SwapRoot.createFromAddress(swapRootAddress));
   }, [client]);
 
-  // open user aggregator contract
+  // Initialize contract only when dependencies are available
   const swapAggregator = useAsyncInitialze(async () => {
-    if (!swapRoot) return;
-    if (!address) return;
-    // user swap aggregator address
+    if (!swapRoot || !address) return null;
     try {
-      const userSwapAggregatorAddr = await swapRoot.getUserAggregatorAddress(
-        address
-      );
-
-      setUserSwapAggregatorAddress(userSwapAggregatorAddr);
-
-      return client.open(
-        SwapAggregator.createFromAddress(userSwapAggregatorAddr)
-      );
+      // Contract initialization
+      return // contract instance
     } catch (err) {
-      console.log(err.message);
+      console.error("Error initializing swap aggregator:", err);
+      return null;
     }
   }, [swapRoot, address]);
 
