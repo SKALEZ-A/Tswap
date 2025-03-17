@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { Spinner, Flex } from "@chakra-ui/react";
 import { DeDustClient } from '@dedust/sdk';
 import CircularText from "./components/Preloader";
+import FeaturesSection2 from "./components/Features2";
 
 export default function DexPage() {
   const [coins, setCoins] = useState(null);
@@ -72,7 +73,11 @@ export default function DexPage() {
 
         // <CircularText/>
       ) : (
+        <>
+        
         <Dex coins={coins} />
+  
+        </>
       )}
     </main>
   );

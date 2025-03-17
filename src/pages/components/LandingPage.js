@@ -11,16 +11,21 @@ import {
   Link,
   useDisclosure,
   Image,
-  VStack, SimpleGrid
+  VStack,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import FeaturesSection from "./Features";
+
 import AboutSection from "./About";
 import Testimonials from "./Testimonials";
 import DownloadSection from "./DownloadSection";
 import Background from "./background";
+import StackDivMain from "./Features2";
+import FeaturesSection2 from "./Features2";
+import TextAnimation from "./Textanimation";
 
 const MotionBox = motion(Box);
 const MotionFlex = motion(Flex);
@@ -31,74 +36,67 @@ const Navbar = () => {
 
   return (
     <>
-    
-    <Box position="fixed" top={0} left={0} right={0} zIndex={10} px={4}>
-      <Container maxW="container.xl">
-        <Flex py={4} justify="space-between" align="center">
-          <HStack spacing={2}>
-            <Image src="/tcandy.jpg" rounded={"sm"} alt="Logo" w={8} h={8} />
-            <Text fontSize="xl" fontWeight="bold">
-              CANDYSWAP
-            </Text>
-          </HStack>
+      <Box position="fixed" top={0} left={0} right={0} zIndex={10} px={4}>
+        <Container maxW="container.xl">
+          <Flex py={4} justify="space-between" align="center">
+            <HStack spacing={2}>
+              <Image src="/tcandy.jpg" rounded={"sm"} alt="Logo" w={8} h={8} />
+              <Text fontSize="xl" fontWeight="bold">
+                CANDYSWAP
+              </Text>
+            </HStack>
 
-          <HStack spacing={8} display={{ base: "none", md: "flex" }}>
-            <Link href="#stats">Stats</Link>
-            <Link href="#docs">Docs</Link>
-            <Button
-              bg="rgba(164, 255, 237, 1)"
-              color="black"
-              _hover={{ bg: "rgba(164, 255, 237, 0.8)" }}
-              borderRadius="full"
-              px={6}
-              onClick={() => router.push("/dex")}
-            >
-              Launch App
-            </Button>
-          </HStack>
+            <HStack spacing={8} display={{ base: "none", md: "flex" }}>
+              <Link href="#stats">Stats</Link>
+              <Link href="#docs">Docs</Link>
+              <Button
+                bg="rgba(164, 255, 237, 1)"
+                color="black"
+                _hover={{ bg: "rgba(164, 255, 237, 0.8)" }}
+                borderRadius="full"
+                px={6}
+                onClick={() => router.push("/dex")}
+              >
+                Launch App
+              </Button>
+            </HStack>
 
-          <Box display={{ base: "block", md: "none" }} onClick={onToggle}>
-            {isOpen ? <X /> : <Menu />}
-          </Box>
-        </Flex>
-
-      
-        <Box
-          display={{ base: isOpen ? "block" : "none", md: "none" }}
-          pb={4}
-          bg="white"
-          borderRadius="md"
-          shadow="md"
-          mt={2}
-        >
-          <Flex direction="column" spacing={4}>
-            <Link py={2} px={4} href="#stats">
-              Stats
-            </Link>
-            <Link py={2} px={4} href="#docs">
-              Docs
-            </Link>
-            <Button
-              size="lg"
-              bg="#357930"
-              color="white"
-              _hover={{ bg: "#357930" }}
-              borderRadius="full"
-              px={8}
-              onClick={() => router.push("/dex")}
-            >
-              Launch App
-            </Button>
+            <Box display={{ base: "block", md: "none" }} onClick={onToggle}>
+              {isOpen ? <X /> : <Menu />}
+            </Box>
           </Flex>
-        </Box>
-      </Container>
-    </Box>
-    
 
+          <Box
+            display={{ base: isOpen ? "block" : "none", md: "none" }}
+            pb={4}
+            bg="white"
+            borderRadius="md"
+            shadow="md"
+            mt={2}
+          >
+            <Flex direction="column" spacing={4}>
+              <Link py={2} px={4} href="#stats">
+                Stats
+              </Link>
+              <Link py={2} px={4} href="#docs">
+                Docs
+              </Link>
+              <Button
+                size="lg"
+                bg="#357930"
+                color="white"
+                _hover={{ bg: "#357930" }}
+                borderRadius="full"
+                px={8}
+                onClick={() => router.push("/dex")}
+              >
+                Launch App
+              </Button>
+            </Flex>
+          </Box>
+        </Container>
+      </Box>
     </>
-
-
-
   );
 };
 
@@ -142,7 +140,6 @@ const FloatingImage = ({ src, initialPosition }) => {
   );
 };
 
-
 const FloatingElement = ({ children, ...props }) => (
   <MotionBox
     position="absolute"
@@ -160,7 +157,6 @@ const FloatingElement = ({ children, ...props }) => (
     {children}
   </MotionBox>
 );
-
 
 const Footer = () => (
   <Box bg="rgba(0, 24, 19, 0.9)" color="white" py={12}>
@@ -211,86 +207,119 @@ export default function LandingPage() {
   if (!mounted) return null; // Prevent hydration errors
 
   return (
+  <>
     <Box
       minH="100vh"
       bg="rgba(0, 24, 19, 1)"
       color="white"
       position="relative"
-      overflow="hidden"
+      overflow="auto" 
       zIndex={1}
     >
       <Navbar />
 
-   
-      <Box maxW="95%" mx="auto" px={6} zIndex={1} position="relative">
-        <Background/>
+      <Box maxW="95%" mx="auto" px={6} zIndex={1} position="relative" >
+        <Background />
 
-      <Container maxW="container.xl" centerContent>
-        <MotionFlex
-          direction="column"
-          align="center"
-          justify="center"
-          minH="100vh"
-          textAlign="center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          px={4}
-        >
-          <Heading
-            as="h1"
-            size={{ base: "2xl", md: "4xl" }}
-            maxW="800px"
-            lineHeight="1.2"
-            mb={8}
+        <Box w="full"  centerContent>
+          <MotionFlex
+            direction="column"
+         
+            justify="center"
+            minH="100vh"
+           
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            px={4}
           >
-            The Universal Dex
-            <br />
-            For The TON Blockchain.
-          </Heading>
-
-          <Text
-            fontSize={{ base: "lg", md: "xl" }}
-            maxW="600px"
-            mb={12}
-            color="gray.400"
-          >
-            Explore a wide range of crypto assets across the TON Blockchain, swap assets with minimal fees and lightning fast speed.
-          </Text>
-
-          <HStack spacing={4}>
-            <Button
-              size="lg"
-              bg="#357930"
-              color="white"
-              _hover={{ bg: "#357930" }}
-              borderRadius="full"
-              px={8}
-              onClick={() => router.push("/dex")}
+            <Heading
+              as="p"
+              fontSize={{ base: "24px", md: "24px" }}
+              maxW="800px"
+             display="flex"
+             fontWeight="normal"
+              textAlign="left"
+              gap={2}
+              lineHeight={1}
+              transform="rotate(-1deg)" 
+              
             >
-              Launch App
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              borderColor="#357930"
-              color="#357930"
-              _hover={{ bg: "#2d6627", color: "white" }}
-              borderRadius="full"
-              px={8}
+              
+
+              The <TextAnimation/> Dex, We are 
+             
+             
+              
+            </Heading>
+            <Heading
+              as="h1"
+              fontSize={{ base: "36px", md: " 188px" }}
+              transform="rotate(-1deg)"  
+              lineHeight={1}
+              mb={4}
+              
             >
-              Start Building
-            </Button>
-          </HStack>
-        </MotionFlex>
-      </Container>
-    
-  <FeaturesSection />
-  <AboutSection />
-  <Testimonials />
-  <DownloadSection />
-</Box>
+             
+
+             CANDYSWAP
+             
+              
+             
+              
+            </Heading>
+
+
+            {/* <Text
+              fontSize={{ base: "lg", md: "xl" }}
+              maxW="600px"
+              mb={12}
+              color="gray.400"
+            >
+              Explore a wide range of crypto assets across the TON Blockchain,
+              swap assets with minimal fees and lightning fast speed.
+            </Text> */}
+
+            <HStack spacing={4}>
+              <Button
+                size="lg"
+                bg="#357930"
+                color="white"
+                _hover={{ bg: "#357930" }}
+                borderRadius="full"
+                px={8}
+                onClick={() => router.push("/dex")}
+              >
+                Launch App
+              </Button>
+              {/* <Button
+                size="lg"
+                variant="outline"
+                borderColor="#357930"
+                color="#357930"
+                _hover={{ bg: "#2d6627", color: "white" }}
+                borderRadius="full"
+                px={8}
+              >
+                Start Building
+              </Button> */}
+            </HStack>
+          </MotionFlex>
+        </Box>
+<div>
+
+        <FeaturesSection />
+        <AboutSection />
+        <Testimonials />
+        <DownloadSection />
+        {/* <FeaturesSection2/> */}
+        
+</div>
+      </Box>
+      
       <Footer />
     </Box>
+   
+  </>
   );
 }

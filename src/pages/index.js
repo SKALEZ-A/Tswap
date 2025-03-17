@@ -6,6 +6,7 @@ import { DeDustClient } from '@dedust/sdk';
 import { Spinner, Flex } from "@chakra-ui/react";
 import { useState, useEffect } from "react";
 import 'react-toastify/dist/ReactToastify.css';
+import FeaturesSection2 from "./components/Features2";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -67,13 +68,14 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main>
+      <main style={{position: 'relative'}}>
         {showDex ? (
           loading ? (
             <Flex
               height="100vh"
               alignItems="center"
               justifyContent="center"
+             
             >
               <Spinner
                 thickness="4px"
@@ -88,6 +90,7 @@ export default function Home() {
           )
         ) : (
           <LandingPage />
+
         )}
       </main>
     </>
