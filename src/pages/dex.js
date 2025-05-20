@@ -3,7 +3,6 @@ import { useState, useEffect } from "react";
 import { Spinner, Flex } from "@chakra-ui/react";
 import { DeDustClient } from '@dedust/sdk';
 import CircularText from "./components/Preloader";
-import FeaturesSection2 from "./components/Features2";
 
 export default function DexPage() {
   const [coins, setCoins] = useState(null);
@@ -14,7 +13,13 @@ export default function DexPage() {
       const dedustClient = new DeDustClient({ endpointUrl: 'https://api.dedust.io' });
       const pools = await dedustClient.getPools();
       
-      const filteredPools = pools.filter(pool => parseInt(pool.totalSupply) > 10 && pool.assets[0].metadata !== null);
+      const filteredPools = pools.filter(pool =>
+        parseInt(pool.totalSupply) > 10 &&
+        Array.isArray(pool.assets) &&
+        pool.assets.length > 0 &&
+        pool.assets[0] &&
+        pool.assets[0].metadata
+      );
       
       const uniqueNamesWithImages = new Map();
       filteredPools.forEach(pool => {

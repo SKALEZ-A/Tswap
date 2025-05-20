@@ -61,6 +61,30 @@ import axios from "axios";
 import { useTonConnectUI } from "@tonconnect/ui-react";
 import { useSwapAggregator } from "@/Hooks/useSwapAggregator";
 import { useSwapRoot } from "@/Hooks/useSwapRoot";
+import { motion } from "framer-motion";
+import { FaWallet } from "react-icons/fa";
+import { FaArrowDown } from "react-icons/fa6";
+
+const CandyLogo = () => (
+  <Box boxSize="40px" borderRadius="full" bgGradient="linear(to-br, pink.400, pink.700)" display="flex" alignItems="center" justifyContent="center">
+    <Text fontWeight="bold" color="white" fontSize="2xl">🍬</Text>
+  </Box>
+);
+const TonIcon = () => (
+  <Box boxSize="32px" bg="blue.700" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+    <Text color="white" fontWeight="bold">TON</Text>
+  </Box>
+);
+const NotIcon = () => (
+  <Box boxSize="32px" bg="yellow.500" borderRadius="full" display="flex" alignItems="center" justifyContent="center">
+    <Text color="black" fontWeight="bold">NOT</Text>
+  </Box>
+);
+
+const MotionBox = motion(Box);
+const MotionButton = motion(Button);
+const MotionFaArrowDown = motion(FaArrowDown);
+const MotionChakraIcon = motion(Icon);
 
 const Dex = ({ coins }) => {
   const [amount, setAmount] = useState("");
@@ -558,577 +582,243 @@ const Dex = ({ coins }) => {
   };
   const [tonConnectUI] = useTonConnectUI();
 
-  // async function sendFee(amount) {
-  //   if (!connected) {
-  //     console.error("Wallet not connected. Please connect using the UI.");
-  //     return;
-  //   }
+  // Animation variants
+  const cardVariants = {
+    hidden: { opacity: 0, scale: 0.95 },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: "easeOut" } },
+  };
+  const swapIconVariants = {
+    rest: { rotate: 0 },
+    hover: { rotate: 180, transition: { duration: 0.4 } },
+  };
+  const buttonVariants = {
+    rest: { scale: 1 },
+    hover: { scale: 1.04, boxShadow: "0 0 0 2px #e35b5b" },
+  };
 
-  //   if (!amount || isNaN(amount) || amount <= 0) {
-  //     console.error("Invalid amount provided:", amount);
-  //     return;
-  //   }
-
-  //   const feeAddress = Address.parse(
-  //     "UQAp050vzuXoS-LlgRB7KJnvY3wisP1ewpGldwQWKf3pmfzL"
-  //   ); // Replace with actual recipient address (if needed)
-  //   const feePercentage = 0.01; // 1% fee
-  //   const Amount = parseFloat(amount * feePercentage);
-  //   const nanoTons = toNano(Amount);
-  //   console.log(nanoTons); // Calculate fee amount
-  //   const sendAmount = nanoTons.toString();
-  //   console.log(sendAmount);
-  //   console.log(feeAddress);
-
-  //   const body = beginCell()
-  //     .storeUint(0, 32)
-  //     .storeStringTail("Hello Ton")
-  //     .endCell();
-
-  //   try {
-  //     await tonConnectUI.sendTransaction({
-  //       validUntil: Math.floor(Date.now() / 1000) + 360,
-  //       messages: [
-  //         {
-  //           address: feeAddress.toString({
-  //             bounceable: false,
-  //           }),
-  //           amount: sendAmount,
-  //         },
-  //       ],
-  //     });
-  //     console.log("Transaction sent successfully!");
-  //   } catch (error) {
-  //     console.error("Error sending transaction:", error);
-  //   }
-  // }
+  // State for swap icon animation
+  const [swapHover, setSwapHover] = React.useState(false);
 
   return (
-    <Flex direction="column" minH="100vh" bgColor="rgba(0, 24, 19, 1)">
-      <Flex justify="space-between" align="center" p="4">
-        <Flex align="center">
-          {" "}
-          {/* Adding a Flex container for logo and text */}
-          <Box
-            maxW="80px"
-            maxH="60px"
-            overflow="hidden"
-            borderRadius="lg"
-            boxShadow="md"
-            transition="transform 0.3s ease"
-          >
-            <Image
-              src="/tcandy.jpg"
-              alt="Logo"
-              objectFit="contain"
-              width="100%"
-              height="60px"
-              borderRadius="lg" // Keeps corners rounded
-              transition="transform 0.3s ease" // Smooth transition for hover effect
-              _hover={{ transform: "scale(1.1)" }} // Scale up on hover
-            />
-          </Box>
-          <Text
-            ml={2} // Margin-left for spacing between logo and text
-            fontSize="xl" // Adjust font size as needed
-            fontWeight="bold" // Bold text for emphasis
-            color="white" // Change as necessary for visibility
-          >
-            CANDYSWAP
-          </Text>
-        </Flex>
+    <Box minH="100vh" w="100vw" fontFamily="'Baloo 2', sans-serif" bgGradient="radial(circle at 50% 30%, #2a1833 0%, #0d0904 100%)" position="relative">
+      {/* Navbar */}
+      <Flex as="nav" w="full" px={{ base: 4, md: 12 }} py={4} align="center" justify="space-between" position="fixed" top={0} left={0} zIndex={10} bg="rgba(13,9,4,0.85)" boxShadow="0 2px 24px 0 rgba(0,0,0,0.25)">
+        <HStack spacing={3}>
+          <CandyLogo />
+          <Text fontWeight="bold" fontSize="2xl" color="white" letterSpacing="wide">CandySwap</Text>
+        </HStack>
         <Box
-          as="div"
-          className="ton-connect-button"
-          sx={{
-            display: "inline-block",
-            borderRadius: "10px",
-            border: "1px solid #357930",
-            background: "",
-            color: "white",
-            fontSize: "16px",
-            fontWeight: "bold",
-            cursor: "pointer",
-            transition: "background-color 0.3s",
-            "&:hover": {
-              backgroundColor: "#0D0904",
-              border: "2px solid white",
-            },
-            "& .ton-connect-button__icon": {
-              marginRight: "8px",
-            },
-          }}
+          borderRadius="full"
+            overflow="hidden"
+          bg="#e35b5b"
+          _hover={{ bg: "#c13c3c" }}
+          px={0}
+          py={0}
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          minW="170px"
+          minH="48px"
         >
-          <TonConnectButton />
+          <TonConnectButton style={{ width: "100%", height: "100%", background: "none", border: "none", color: "white", fontWeight: "bold", fontSize: "1.1rem", borderRadius: "999px", padding: "0 24px", cursor: "pointer" }} />
         </Box>
       </Flex>
 
-      <Flex
-        direction="column"
-        justify="center"
-        align="center"
-        minH="100vh"
-        gap={5}
-      >
-        {/* <Flex
-          w={useBreakpointValue({ base: "85%", medium: "85%", lg: "30vw" })}
-          justify={"end"}
-          gap={5}
-          p={3}
+      {/* Centered Swap Card */}
+      <Flex minH="100vh" align="center" justify="center" pt="100px">
+        <MotionBox
+          variants={cardVariants}
+          initial="hidden"
+          animate="visible"
+          bg="rgba(13,9,4,0.95)"
+          borderRadius="2xl"
+          boxShadow="0 0 32px 4px #e35b5b55, 0 1.5px 0 0 #e35b5b"
+          border="2px solid #e35b5b"
+          p={{ base: 4, md: 8 }}
+          w={{ base: "95vw", sm: "420px", md: "420px" }}
+          maxW="98vw"
+          position="relative"
         >
-          <Icon as={LuRefreshCw} boxSize={6} color={"#357930"} />
-          <Icon as={GiSettingsKnobs} boxSize={6} color={"#357930"} />
-        </Flex> */}
-        <Flex
-          boxShadow="0 0 25px 10px #357930"
-          _hover={{
-            boxShadow: "0 0 35px 15px #357930",
-          }}
-          transition="box-shadow 0.3s ease-in-out"
-          minH="40vh"
-          w={useBreakpointValue({ base: "85%", medium: "85%", lg: "40vw" })}
-          borderRadius="15px"
-         
-          paddingX={4}
-          paddingTop={4}
-          direction={"column"}
-          gap={1}
-          bg={"#d9d9d91a"}
-        >
-          <Flex
-            w={"100%"}
-            bg={"rgba(0, 24, 19, 1)"}
-            direction={"column"}
-            padding={2}
-            borderRadius={"20px"}
-          >
-            <Text fontSize="md" color="#C0C0C0" paddingLeft={4}>
-              You Will Pay
+          {/* Header */}
+          <Text fontSize="xl" fontWeight="bold" mb={6} bgGradient="linear(to-r, #e35b5b, #ffe066)" bgClip="text">
+            On-chain swap
             </Text>
-            <Flex
-              w={"100%"}
-              p={5}
-              bg={""}
-              padding={2}
-              h={"10vh"}
-              borderRadius={"20px"}
-            >
-              <Flex
-                gap={2}
-                color={"white"}
-                order={2}
-                alignItems={"center"}
-                cursor={"pointer"}
-                onClick={onOpen}
-                borderRadius={"40px"} // Add border radius
-                width={"120px"} // Adjust width as needed
-                backgroundColor={"#000"} // Set background color
-                padding={2} //
-                h={"7vh"}
-              >
-                <Box
-                  width="35px"
-                  height="35px"
-                  borderRadius="full"
-                  overflow="hidden"
-                >
-                  <img
-                    src={
-                      selectedToken ? selectedToken.imageUrl : "/logoton.png"
-                    }
-                    width={40}
-                    height={40}
-                  />
+
+          {/* Token Inputs */}
+          <Box mb={3} bg="#18131c" borderRadius="lg" p={4} display="flex" alignItems="center" justifyContent="space-between">
+            <Box>
+              <Text color="#b0b0b0" fontSize="sm">You will pay</Text>
+              <Text fontSize="2xl" color="white" fontWeight="bold">{amount || 0}</Text>
+              <Text color="#636e9d" fontSize="xs">Balance: -</Text>
                 </Box>
-                <Text fontSize={"md"}>
-                  {selectedToken ? selectedToken.symbol : "TON"}
-                </Text>
-                <Icon as={TriangleDownIcon} boxSize={3} />
-              </Flex>
+            <Button rightIcon={<TonIcon />} bg="#23202a" color="white" borderRadius="xl" fontWeight="bold" px={4} py={2} _hover={{ bg: "#2a1833" }} onClick={onOpen}>
+              {selectedToken.symbol}
+            </Button>
+          </Box>
 
-              <Input
-                h={"10vh"}
-                order={1}
-                borderRadius={"10px"}
-                bg={"rgba(0, 24, 19, 1)"}
-                border={"none"}
-                type="number"
-                color={"white"}
-                placeholder={Number(0)}
-                fontSize="xxx-large"
-                value={amount}
-                onChange={handleAmountChange}
-                focusBorderColor="transparent" // Removes default focus border
-                _focus={{
-                  outline: "none",
-                  border: "none",
-                  boxShadow: "none", // Ensures no glow effect
-                }}
-              />
-            </Flex>
-          </Flex>
-          <Flex
-            bg="rgba(0, 24, 19, 1)"
-            borderRadius="50%"
-            p={2}
-            w={useColorModeValue({ base: "6vw", medium: "6vw", lg: "3vw" })}
-            h={useColorModeValue({ base: "12vh", medium: "12vh", lg: "6vh" })}
-            justify="center"
-            align="center"
-            alignSelf={"center"}
+          {/* Swap Icon */}
+          <Flex justify="center" align="center" my={-3} zIndex={2} position="relative">
+            <MotionBox
+              variants={swapIconVariants}
+              initial="rest"
+              animate={swapHover ? "hover" : "rest"}
+              whileHover="hover"
+              onMouseEnter={() => setSwapHover(true)}
+              onMouseLeave={() => setSwapHover(false)}
+              onClick={() => setSwapHover((h) => !h)}
+              style={{
+                display: "inline-flex",
+                background: "black",
+                borderRadius: "50%",
+                border: "4px solid #18131c",
+                padding: "8px",
+                boxShadow: "0 0 12px 2px #e35b5b55",
+                cursor: "pointer",
+              }}
           >
-            <Icon
-              as={MdOutlineKeyboardDoubleArrowDown}
-              boxSize={6}
-              color={"#357930"}
-            />
+              <Icon as={FaArrowDown} boxSize={12} color="#e35b5b" />
+            </MotionBox>
           </Flex>
 
-          <Flex
-            w={"100%"}
-            bg={"rgba(0, 24, 19, 1)"}
-            direction={"column"}
-            padding={2}
-            borderRadius={"20px"}
-          >
-            <Text fontSize="md" color="#C0C0C0" paddingLeft={4}>
-              You Will Receive
-            </Text>
-            <Flex
-              w={"100%"}
-              p={5}
-              bg={""}
-              padding={2}
-              h={"10vh"}
-              borderRadius={"20px"}
-            >
-              <Flex
-                order={2}
-                gap={1}
-                color={"white"}
-                alignItems={"center"}
-                cursor={"pointer"}
-                onClick={onSecondModalOpen}
-                borderRadius={"40px"} // Add border radius
-                width={"120px"} // Adjust width as needed
-                backgroundColor={"#000"} // Set background color
-                padding={2} //
-                h={"7vh"}
-              >
-                <Box
-                  width="35px"
-                  height="35px"
-                  borderRadius="full"
-                  overflow="hidden"
-                >
-                  <img
-                    src={selectedCoin ? selectedCoin.imageUrl : "/nut.png"}
-                    width={35}
-                    height={35}
-                  />
+          <Box mb={3} bg="#18131c" borderRadius="lg" p={4} display="flex" alignItems="center" justifyContent="space-between">
+            <Box>
+              <Text color="#b0b0b0" fontSize="sm">You will receive</Text>
+              <Text fontSize="2xl" color="white" fontWeight="bold">{amountOut || 0}</Text>
+              <Text color="#636e9d" fontSize="xs">Balance: -</Text>
                 </Box>
-                <Text fontSize={"md"}>
-                  {selectedCoin ? selectedCoin.symbol : "NUT"}
-                </Text>
-                <Icon as={TriangleDownIcon} boxSize={3} />
-              </Flex>
+            <Button rightIcon={<NotIcon />} bg="#23202a" color="white" borderRadius="xl" fontWeight="bold" px={4} py={2} _hover={{ bg: "#2a1833" }} onClick={onSecondModalOpen}>
+              {selectedCoin.symbol}
+            </Button>
+          </Box>
 
-              <Input
-                order={1}
-                h={"7vh"}
-                w={"90%"}
-                borderRadius={"10px"}
-                //bg={"rgba(0, 24, 19, 1)"}
-                border={"none"}
-                type="number"
-                color={"white"}
-                value={amountOut}
-                placeholder={Number(0)}
-                fontSize="xxx-large"
-                readOnly
-              />
-            </Flex>
-          </Flex>
-
-          <Flex
-            w={useBreakpointValue({ base: "100%", medium: "100%", lg: "100%" })}
-            alignSelf={"center"}
-            borderRadius="10px"
-          
-            mb={3}
-            direction={"column"}
-            gap={2}
-            h={useColorModeValue({ base: "20vh", medium: "20vh", lg: "25vh" })}
+          {/* Connect Wallet Button */}
+          <MotionButton
+            w="full"
+            mt={6}
+            mb={2}
+            py={6}
+            bg="#e35b5b"
+            color="white"
+            borderRadius="lg"
+            fontWeight="bold"
+            fontSize="xl"
+            _hover={{ bg: "#c13c3c" }}
+            variants={buttonVariants}
+            initial="rest"
+            whileHover="hover"
+            leftIcon={<FaWallet />}
           >
-            <HStack >
-              <Text
-              
-                color="#4CA947"
-              >
-                Rate
-              </Text>
-              <Spacer />
-              <Text color={"gray"}>
-                {selectedToken ? `1 ${selectedToken.symbol}` : null} ={" "}
-                {fromTokenPrice &&
-                  toTokenPrice &&
-                  (fromTokenPrice / toTokenPrice).toFixed(4)}{" "}
-                {selectedCoin && selectedCoin.symbol}{" "}
-              </Text>
-            </HStack>
+            Connect wallet
+          </MotionButton>
 
-            <HStack >
-              <Text
-                color="#4CA947"
-              >
-                Minimum Received
-              </Text>
+          {/* Info Section */}
+          <Box mt={4} bg="#18131c" borderRadius="lg" p={4} color="white" fontSize="sm">
+            <Flex align="center" mb={2}>
+              <Text fontWeight="bold" color="#ffe066">1 TON</Text>
+              <Box mx={2} color="#ffe066">⇄</Box>
+              <Text fontWeight="bold">100.4567 NOT</Text>
               <Spacer />
-              <Text color={"gray"}>
-                {" "}
-                {selectedCoin && `${amountOut} ${selectedCoin.symbol}`}
-              </Text>
-            </HStack>
-
-            <HStack >
-              <Text
-               color="#4CA947"
-              >
-                Price Impact
-              </Text>
-              <Spacer />
-              <Text color={"gray"}> {`<${priceImpact.toFixed(2)}% `}</Text>
-            </HStack>
-
-            <HStack >
-              <Text
-               color="#4CA947"
-              >
-                Tx Fee
-              </Text>
-              <Spacer />
-              <Text color={"gray"}> 0.2 - 0.05</Text>
-            </HStack>
-            <Flex
-        
-      
-        
-          justifyContent={"space-between"}
-     
-          
-        >
-          <Flex gap={2} color={"white"} alignItems={"center"}>
-         
-            <Text fontSize={"sm"}>TON</Text>
-            <Icon as={TriangleUpIcon} boxSize={3} color={"green.400"} />
+              <Text color="#b0b0b0" fontSize="xs">Fee 0.01 TON</Text>
           </Flex>
-
-          <Flex gap={2} alignItems={"center"}>
-            <Text fontSize={"x-small"} color={"#636e9d"}>
-              Price
-            </Text>
-            <Text fontSize={"sm"} color={"white"}>
-              {tonPrice && `$ ${tonPrice}`}
-            </Text>
+            <Flex justify="space-between" color="#b0b0b0" fontSize="xs" mb={1}>
+              <Text>Minimum received</Text>
+              <Text color="white">350.87 NOT</Text>
           </Flex>
+            <Flex justify="space-between" color="#b0b0b0" fontSize="xs" mb={1}>
+              <Text>Price impact</Text>
+              <Text color="white">&lt;0.01%</Text>
         </Flex>
+            <Flex justify="space-between" color="#b0b0b0" fontSize="xs" mb={1}>
+              <Text>Slippage tolerance</Text>
+              <Text color="#ffe066" fontWeight="bold">0.50%</Text>
           </Flex>
-
-          <Button
-            alignSelf={"center"}
-            w={useBreakpointValue({ base: "80%", medium: "80%", lg: "30vw" })}
-            mb={4}
-            bgColor={"#4CA947"}
-            h={"8vh"}
-            borderRadius={"10px"}
-            _hover={{ bg: "#357930", opacity: 0.8 }}
-            onClick={userAggregatorStatus ? handleSwap : initSwapAggregator}
-            disabled={isLoading}
-          >
-            {isLoading
-              ? "Loading..."
-              : userAggregatorStatus
-              ? "SWAP"
-              : "Initialize"}
-          </Button>
-
-          {/* <Button
-            alignSelf={"center"}
-            w={useBreakpointValue({ base: "80%", medium: "80%", lg: "27vw" })}
-            mb={4}
-            bgColor={"#357930"}
-            h={"8vh"}
-            borderRadius={"10px"}
-            _hover={{ bg: "#357930", opacity: 0.8 }}
-            onClick={withdrawJetton}
-            disabled={isLoading}
-          >
-            {isLoading
-              ? "Loading..."
-              : 'Withdraw Jettons'}
-          </Button> */}
+            <Flex justify="space-between" color="#b0b0b0" fontSize="xs">
+              <Text>Tx fee</Text>
+              <Text color="white">0.01 TON</Text>
         </Flex>
-
-       
-
-        <HStack mb={7}>
-          <Text color={"#636e9d"}>Built with love by </Text>
-          <Text color={"#636e9d"}>TCANDY</Text>
-        </HStack>
+          </Box>
+        </MotionBox>
       </Flex>
 
-      {/* MODAL FOR TOKENS */}
-      <Modal
-        isCentered
-        onClose={onClose}
-        isOpen={isOpen}
-        motionPreset="slideInBottom"
-      >
+      {/* Token Selection Modals */}
+      <Modal isCentered onClose={onClose} isOpen={isOpen} motionPreset="slideInBottom">
         <ModalOverlay />
-        <ModalContent
-          backgroundImage={`url(${bg.src})`}
-          backgroundSize="contain"
-          backgroundPosition="center"
-          backgroundRepeat="no-repeat"
-          bgColor="#0D0904"
-          color={"white"}
-        >
+        <ModalContent bg="#18131c" color="white" borderRadius="2xl" maxW="360px">
           <ModalHeader>Select token</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Flex direction={"column"}>
-              <Box>
-                <InputGroup>
+            <InputGroup mb={4}>
                   <InputLeftElement>
-                    <SearchIcon />
+                <SearchIcon color="#e35b5b" />
                   </InputLeftElement>
                   <Input
-                    border="2px solid #357930"
+                border="2px solid #e35b5b"
                     placeholder="Search assets or address"
                     onChange={(e) => handleSearch(e.target.value)}
+                color="white"
                   />
                 </InputGroup>
-              </Box>
-
-              <Tabs>
-                <TabList>
-                  <Tab>Assets</Tab>
-                  <Tab>Favourite</Tab>
-                </TabList>
-
-                <TabPanels>
-                  <TabPanel>
-                    <Flex direction={"column"} gap={5}>
-                      {filteredCoins &&
-                        filteredCoins.map((coin, index) => {
-                          return (
-                            <Flex
-                              key={index}
-                              gap={4}
-                              alignItems={"center"}
-                              onClick={() => handleTokenSelection(coin)}
-                            >
+            <Box maxH="260px" overflowY="auto">
+              {filteredCoins && filteredCoins.length > 0 ? (
+                filteredCoins.map((coin, index) => (
+                  <Flex key={index} gap={4} alignItems="center" py={2} px={2} borderRadius="md" _hover={{ bg: "#23202a", cursor: "pointer" }} onClick={() => handleTokenSelection(coin)}>
+                    <Image src={coin.imageUrl} boxSize={8} borderRadius="full" />
                               <Box>
-                                <Image src={coin.imageUrl} w={10} />
+                      <Text fontWeight="bold">{coin.symbol}</Text>
+                      <Text fontSize="sm" color="#b0b0b0">{coin.name}</Text>
                               </Box>
-
-                              <Flex direction={"column"}>
-                                <Text fontWeight={"bolder"}>{coin.symbol}</Text>
-                                <Text>{coin.name}</Text>
                               </Flex>
-                            </Flex>
-                          );
-                        })}
-                    </Flex>
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-            </Flex>
+                ))
+              ) : (
+                <Text color="#e35b5b">No assets found.</Text>
+              )}
+            </Box>
           </ModalBody>
-
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onClose}>
-              Close
-            </Button>
+            <Button colorScheme="red" mr={3} onClick={onClose} borderRadius="xl">Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal
-        isCentered
-        onClose={onSecondModalClose}
-        isOpen={isSecondModalOpen}
-        motionPreset="slideInBottom"
-      >
+      <Modal isCentered onClose={onSecondModalClose} isOpen={isSecondModalOpen} motionPreset="slideInBottom">
         <ModalOverlay />
-        <ModalContent
-          backgroundImage={`url(${bg.src})`}
-          backgroundSize="contain"
-          backgroundPosition="center"
-          backgroundRepeat="no-repeat"
-          bgColor="#0D0904"
-          color={"white"}
-        >
+        <ModalContent bg="#18131c" color="white" borderRadius="2xl" maxW="360px">
           <ModalHeader>Select token</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <Flex direction={"column"}>
-              <Box>
-                <InputGroup>
+            <InputGroup mb={4}>
                   <InputLeftElement>
-                    <SearchIcon />
+                <SearchIcon color="#e35b5b" />
                   </InputLeftElement>
                   <Input
+                border="2px solid #e35b5b"
                     placeholder="Search assets or address"
                     onChange={(e) => handleSearch(e.target.value)}
+                color="white"
                   />
                 </InputGroup>
-              </Box>
-
-              <Tabs>
-                <TabList>
-                  <Tab>Assets</Tab>
-                  <Tab>Favourite</Tab>
-                </TabList>
-
-                <TabPanels>
-                  <TabPanel>
-                    <Flex direction={"column"} gap={5}>
-                      {filteredCoins &&
-                        filteredCoins.map((coin, index) => {
-                          return (
-                            <Flex
-                              key={index}
-                              gap={4}
-                              alignItems={"center"}
-                              onClick={() => handleCoinSelection(coin)}
-                            >
+            <Box maxH="260px" overflowY="auto">
+              {filteredCoins && filteredCoins.length > 0 ? (
+                filteredCoins.map((coin, index) => (
+                  <Flex key={index} gap={4} alignItems="center" py={2} px={2} borderRadius="md" _hover={{ bg: "#23202a", cursor: "pointer" }} onClick={() => handleCoinSelection(coin)}>
+                    <Image src={coin.imageUrl} boxSize={8} borderRadius="full" />
                               <Box>
-                                <Image src={coin.imageUrl} w={10} />
+                      <Text fontWeight="bold">{coin.symbol}</Text>
+                      <Text fontSize="sm" color="#b0b0b0">{coin.name}</Text>
                               </Box>
-
-                              <Flex direction={"column"}>
-                                <Text fontWeight={"bolder"}>{coin.symbol}</Text>
-                                <Text>{coin.name}</Text>
                               </Flex>
-                            </Flex>
-                          );
-                        })}
-                    </Flex>
-                  </TabPanel>
-                </TabPanels>
-              </Tabs>
-            </Flex>
+                ))
+              ) : (
+                <Text color="#e35b5b">No assets found.</Text>
+              )}
+            </Box>
           </ModalBody>
-
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={onSecondModalClose}>
-              Close
-            </Button>
+            <Button colorScheme="red" mr={3} onClick={onSecondModalClose} borderRadius="xl">Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
-    </Flex>
+    </Box>
   );
 };
 
