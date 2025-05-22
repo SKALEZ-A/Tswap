@@ -7,6 +7,7 @@ import {
   Icon,
   InputGroup,
   Input,
+  InputLeftElement,
   HStack,
   Spacer,
   Button,
@@ -19,32 +20,32 @@ import {
   ModalCloseButton,
   useDisclosure,
   Spinner,
+  useToast,
 } from "@chakra-ui/react";
-import { toast } from "react-toastify";
 import { TonConnectButton } from "@tonconnect/ui-react";
-import { LuRefreshCw } from "react-icons/lu";
-import { GiSettingsKnobs } from "react-icons/gi";
 import { SearchIcon } from "@chakra-ui/icons";
 import { MdOutlineKeyboardDoubleArrowDown } from "react-icons/md";
-import { FaWallet } from "react-icons/fa";
 import { FaArrowDown } from "react-icons/fa6";
 import { motion } from "framer-motion";
-import { Address, toNano, fromNano } from "@ton/ton";
+import { toNano, fromNano } from "@ton/ton";
 import { useTonConnect } from "@/Hooks/useTonConnect";
 import { useTonClient } from "@/Hooks/useTonClient";
 import { useSwapAggregator } from "@/Hooks/useSwapAggregator";
 import { 
-  getExpectedSwapAmount, 
-  getHardcodedRate 
-} from "@/utils/dedustUtils";
+  calculateExpectedOutput, 
+  formatNumber, 
+  getHardcodedRate,
+  calculateGasFee,
+  validateSwap,
+  getDefaultTokens
+} from "@/utils/dedustHelpers";
 
 // Motion components
 const MotionBox = motion(Box);
 const MotionButton = motion(Button);
-const MotionFaArrowDown = motion(FaArrowDown);
 const MotionIcon = motion(Icon);
 
-const Dex = ({ coins = [] }) => {
+const DexNew = ({ coins = getDefaultTokens() }) => {
   // State variables
   const [amount, setAmount] = useState("");
   const [expectedOutput, setExpectedOutput] = useState(0);
@@ -53,42 +54,35 @@ const Dex = ({ coins = [] }) => {
   const [swapSuccess, setSwapSuccess] = useState(false);
   const [tonPrice, setTonPrice] = useState(3.11); // Default TON price in USD
   const [filteredCoins, setFilteredCoins] = useState(coins);
+  const [slippage, setSlippage] = useState(0.5); // Default slippage 0.5%
+  const [gasFee, setGasFee] = useState({ fee: 0.1, total: 0.1 });
   
   // Default tokens
-  const [selectedToken, setSelectedToken] = useState({
-    contractAddress: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
-    imageUrl: "https://assets.dedust.io/images/ton.webp",
-    name: "Toncoin",
-    symbol: "TON",
-  });
+  const [fromToken, setFromToken] = useState(coins[0]); // TON
+  const [toToken, setToToken] = useState(coins[1]); // NOT
   
-  const [selectedCoin, setSelectedCoin] = useState({
-    contractAddress: "EQAvlWFDxGF2lXm67y4yzC17wYKD9A0guwPkMs1gOsM__NOT",
-    imageUrl: "https://assets.dedust.io/images/not.webp",
-    name: "Notcoin",
-    symbol: "NOT",
-  });
-
   // Hooks
-  const { isOpen, onOpen, onClose } = useDisclosure();
-  const { isOpen: isSecondModalOpen, onOpen: onSecondModalOpen, onClose: onSecondModalClose } = useDisclosure();
+  const { isOpen: isFromModalOpen, onOpen: onFromModalOpen, onClose: onFromModalClose } = useDisclosure();
+  const { isOpen: isToModalOpen, onOpen: onToModalOpen, onClose: onToModalClose } = useDisclosure();
   const { sender, userAddress, connected } = useTonConnect();
   const client = useTonClient();
   const { 
     swapTonForJetton, 
     swapJettonForTon, 
-    swapJettonForJetton 
+    swapJettonForJetton,
+    userAggregatorStatus 
   } = useSwapAggregator();
+  const toast = useToast();
 
   // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, scale: 0.95 },
-    visible: { opacity: 1, scale: 1, transition: { duration: 0.7, ease: "easeOut" } },
+    visible: { opacity: 1, scale: 1, transition: { duration: 0.5, ease: "easeOut" } },
   };
 
   const buttonVariants = {
     rest: { scale: 1 },
-    hover: { scale: 1.04, boxShadow: "0 0 0 2px #e35b5b" },
+    hover: { scale: 1.05 },
   };
 
   const swapIconVariants = {
@@ -113,37 +107,28 @@ const Dex = ({ coins = [] }) => {
     fetchTonPrice();
   }, []);
 
-  // Calculate expected output when amount, selectedToken, or selectedCoin changes
+  // Calculate expected output when amount, fromToken, or toToken changes
   useEffect(() => {
-    const calculateExpectedOutput = async () => {
-      if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
-        setExpectedOutput(0);
-        setPriceImpact(0);
-        return;
-      }
-
-      try {
-        const amountInNano = toNano(amount);
-        const { expectedOutput, priceImpact } = await getExpectedSwapAmount({
-          fromAddress: selectedToken.contractAddress,
-          toAddress: selectedCoin.contractAddress,
-          amount: amountInNano,
-          client
-        });
-
-        setExpectedOutput(expectedOutput);
-        setPriceImpact(priceImpact);
-      } catch (error) {
-        console.error("Error calculating expected output:", error);
-        setExpectedOutput(0);
-        setPriceImpact(0);
-      }
-    };
-
-    if (client && selectedToken && selectedCoin) {
-      calculateExpectedOutput();
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      setExpectedOutput(0);
+      setPriceImpact(0);
+      return;
     }
-  }, [amount, selectedToken, selectedCoin, client]);
+
+    // Calculate gas fee
+    const fee = calculateGasFee(fromToken.symbol, toToken.symbol, parseFloat(amount));
+    setGasFee(fee);
+
+    // Get exchange rate
+    const rate = getHardcodedRate(fromToken.contractAddress, toToken.contractAddress);
+    
+    // Calculate expected output
+    const { expectedOutput } = calculateExpectedOutput(parseFloat(amount), rate, slippage);
+    setExpectedOutput(expectedOutput);
+    
+    // Set price impact (simplified)
+    setPriceImpact(0.5); // Default price impact
+  }, [amount, fromToken, toToken, slippage]);
 
   // Hide success message after 5 seconds
   useEffect(() => {
@@ -156,17 +141,25 @@ const Dex = ({ coins = [] }) => {
   }, [swapSuccess]);
 
   // Handle token selection
-  const handleTokenSelection = (token) => {
-    setSelectedToken(token);
+  const handleFromTokenSelection = (token) => {
+    if (token.contractAddress === toToken.contractAddress) {
+      // Swap tokens if the same token is selected
+      setToToken(fromToken);
+    }
+    setFromToken(token);
     setFilteredCoins(coins);
-    onClose();
+    onFromModalClose();
   };
 
   // Handle coin selection
-  const handleCoinSelection = (token) => {
-    setSelectedCoin(token);
+  const handleToTokenSelection = (token) => {
+    if (token.contractAddress === fromToken.contractAddress) {
+      // Swap tokens if the same token is selected
+      setFromToken(toToken);
+    }
+    setToToken(token);
     setFilteredCoins(coins);
-    onSecondModalClose();
+    onToModalClose();
   };
 
   // Handle amount change
@@ -194,89 +187,149 @@ const Dex = ({ coins = [] }) => {
     setFilteredCoins(filtered);
   };
 
+  // Handle swap tokens
+  const handleSwapTokens = () => {
+    const tempToken = fromToken;
+    setFromToken(toToken);
+    setToToken(tempToken);
+    
+    // Reset amount and expected output
+    setAmount("");
+    setExpectedOutput(0);
+  };
+
   // Handle swap
   const handleSwap = async () => {
     try {
-      if (!connected) {
-        toast.error("Please connect your wallet");
+      // Validate swap parameters
+      const validation = validateSwap({
+        connected,
+        fromToken,
+        toToken,
+        amount,
+        balance: undefined // We don't have balance info yet
+      });
+      
+      if (!validation.valid) {
+        toast({
+          title: "Swap Error",
+          description: validation.error,
+          status: "error",
+          duration: 5000,
+          isClosable: true,
+        });
         return;
       }
-
-      if (!amount || Number(amount) <= 0) {
-        toast.error("Please enter a valid amount");
+      
+      // Check if user aggregator is initialized
+      if (!userAggregatorStatus) {
+        toast({
+          title: "Initializing",
+          description: "Please wait while we initialize your swap account...",
+          status: "info",
+          duration: 5000,
+          isClosable: true,
+        });
         return;
       }
 
       setIsLoading(true);
-      toast.info("Preparing swap...");
+      toast({
+        title: "Preparing Swap",
+        description: "Please confirm the transaction in your wallet...",
+        status: "info",
+        duration: 5000,
+        isClosable: true,
+      });
 
       const amountInNano = toNano(amount);
-      const slippageTolerance = 0.5; // 0.5% slippage tolerance
       const deadlineMinutes = 5; // 5 minutes deadline
 
       // TON to Jetton
-      if (
-        selectedToken.contractAddress ===
-        "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c"
-      ) {
-        toast.info(`Swapping ${amount} TON to ${selectedCoin.symbol}...`);
-        await swapTonForJetton(
-          selectedCoin.contractAddress,
-          amountInNano,
-          slippageTolerance,
-          deadlineMinutes
-        );
-        toast.success(`Successfully swapped ${amount} TON to ${selectedCoin.symbol}!`);
-      }
-      // Jetton to TON
-      else if (
-        selectedCoin.contractAddress ===
-        "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c"
-      ) {
-        toast.info(`Swapping ${amount} ${selectedToken.symbol} to TON...`);
-        
-        // Calculate jettonPriceToTon based on current rates or use a default value
-        const { expectedOutput } = await getExpectedSwapAmount({
-          fromAddress: selectedToken.contractAddress,
-          toAddress: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
-          amount: toNano("1"),
-          client
+      if (fromToken.symbol === "TON") {
+        toast({
+          title: "Swapping",
+          description: `Swapping ${amount} TON to ${toToken.symbol}...`,
+          status: "loading",
+          duration: 10000,
+          isClosable: true,
         });
         
-        const jettonPriceToTon = toNano(expectedOutput.toString() || "0.1");
-        
-        await swapJettonForTon(
-          selectedToken.contractAddress,
+        await swapTonForJetton(
+          toToken.contractAddress,
           amountInNano,
-          jettonPriceToTon, // Use calculated price or fallback
-          slippageTolerance,
+          slippage,
           deadlineMinutes
         );
-        toast.success(`Successfully swapped ${amount} ${selectedToken.symbol} to TON!`);
+        
+        toast({
+          title: "Swap Successful",
+          description: `Successfully swapped ${amount} TON to ${toToken.symbol}!`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+      // Jetton to TON
+      else if (toToken.symbol === "TON") {
+        toast({
+          title: "Swapping",
+          description: `Swapping ${amount} ${fromToken.symbol} to TON...`,
+          status: "loading",
+          duration: 10000,
+          isClosable: true,
+        });
+        
+        // Calculate jettonPriceToTon based on current rates
+        const rate = getHardcodedRate(fromToken.contractAddress, toToken.contractAddress);
+        const jettonPriceToTon = toNano(rate.toString());
+        
+        await swapJettonForTon(
+          fromToken.contractAddress,
+          amountInNano,
+          jettonPriceToTon,
+          slippage,
+          deadlineMinutes
+        );
+        
+        toast({
+          title: "Swap Successful",
+          description: `Successfully swapped ${amount} ${fromToken.symbol} to TON!`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
       }
       // Jetton to Jetton
       else {
-        toast.info(`Swapping ${amount} ${selectedToken.symbol} to ${selectedCoin.symbol}...`);
-        
-        // For Jetton to Jetton, we need to calculate the price in TON
-        const { expectedOutput } = await getExpectedSwapAmount({
-          fromAddress: selectedToken.contractAddress,
-          toAddress: "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c",
-          amount: toNano("1"),
-          client
+        toast({
+          title: "Swapping",
+          description: `Swapping ${amount} ${fromToken.symbol} to ${toToken.symbol}...`,
+          status: "loading",
+          duration: 10000,
+          isClosable: true,
         });
         
-        const jettonPriceToTon = toNano(expectedOutput.toString() || "0.1");
+        // Calculate jettonPriceToTon based on current rates
+        const rate = getHardcodedRate(fromToken.contractAddress, "EQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAM9c");
+        const jettonPriceToTon = toNano(rate.toString());
         
         await swapJettonForJetton(
-          selectedToken.contractAddress,
-          selectedCoin.contractAddress,
+          fromToken.contractAddress,
+          toToken.contractAddress,
           amountInNano,
-          jettonPriceToTon, // Use calculated price or fallback
+          jettonPriceToTon,
           toNano("0"), // Minimum amount out
           deadlineMinutes
         );
-        toast.success(`Successfully swapped ${amount} ${selectedToken.symbol} to ${selectedCoin.symbol}!`);
+        
+        toast({
+          title: "Swap Successful",
+          description: `Successfully swapped ${amount} ${fromToken.symbol} to ${toToken.symbol}!`,
+          status: "success",
+          duration: 5000,
+          isClosable: true,
+        });
       }
       
       // Reset form after successful swap
@@ -301,17 +354,40 @@ const Dex = ({ coins = [] }) => {
         errorMessage = `Swap failed: ${error.message}`;
       }
       
-      toast.error(errorMessage);
+      toast({
+        title: "Swap Error",
+        description: errorMessage,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Get swap button text
+  const getSwapButtonText = () => {
+    if (!connected) {
+      return "Connect Wallet";
+    }
+    
+    if (!fromToken || !toToken) {
+      return "Select Tokens";
+    }
+    
+    if (!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0) {
+      return "Enter Amount";
+    }
+    
+    return "Swap";
   };
 
   // State for swap icon animation
   const [swapHover, setSwapHover] = useState(false);
 
   return (
-    <Box minH="100vh" w="100vw" fontFamily="'Baloo 2', sans-serif" bgGradient="radial(circle at 50% 30%, #2a1833 0%, #0d0904 100%)" position="relative" overflowX="hidden">
+    <Box minH="100vh" w="100%" fontFamily="'Baloo 2', sans-serif" bgGradient="radial(circle at 50% 30%, #2a1833 0%, #0d0904 100%)" position="relative" overflowX="hidden">
       {/* Navbar */}
       <Flex as="nav" align="center" justify="space-between" p={4} color="white">
         <Box>
@@ -325,7 +401,7 @@ const Dex = ({ coins = [] }) => {
       </Flex>
 
       {/* Centered Swap Card */}
-      <Flex minH="100vh" align="center" justify="center" pt={{ base: "80px", md: "100px" }} px={{ base: 2, sm: 4 }}>
+      <Flex minH="80vh" align="center" justify="center" pt={{ base: "20px", md: "40px" }} px={{ base: 2, sm: 4 }}>
         <MotionBox
           variants={cardVariants}
           initial="hidden"
@@ -345,7 +421,7 @@ const Dex = ({ coins = [] }) => {
             On-chain swap
           </Text>
 
-          {/* Token Inputs */}
+          {/* From Token Input */}
           <Box mb={3} bg="#18131c" borderRadius="lg" p={4} display="flex" flexDirection="column" gap={3}>
             <Flex justify="space-between" align="center">
               <Text color="#b0b0b0" fontSize="sm">You will pay</Text>
@@ -370,19 +446,19 @@ const Dex = ({ coins = [] }) => {
                 px={4} 
                 py={2} 
                 _hover={{ bg: "#2a1833" }} 
-                onClick={onOpen}
+                onClick={onFromModalOpen}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
                 gap={2}
               >
-                <Image src={selectedToken.imageUrl} boxSize={6} borderRadius="full" />
-                <Text>{selectedToken.symbol}</Text>
+                <Image src={fromToken.imageUrl} boxSize={6} borderRadius="full" />
+                <Text>{fromToken.symbol}</Text>
                 <Icon as={MdOutlineKeyboardDoubleArrowDown} />
               </Button>
             </Flex>
             <Flex justify="space-between" color="#b0b0b0" fontSize="xs">
-              <Text>≈ ${(parseFloat(amount || 0) * tonPrice).toFixed(2)}</Text>
+              <Text>≈ ${(parseFloat(amount || 0) * (fromToken.symbol === "TON" ? tonPrice : 1)).toFixed(2)}</Text>
             </Flex>
           </Box>
 
@@ -395,20 +471,7 @@ const Dex = ({ coins = [] }) => {
               whileHover="hover"
               onMouseEnter={() => setSwapHover(true)}
               onMouseLeave={() => setSwapHover(false)}
-              onClick={() => {
-                // Swap the tokens
-                const tempToken = selectedToken;
-                setSelectedToken(selectedCoin);
-                setSelectedCoin(tempToken);
-                
-                // Swap the amounts if they exist
-                if (amount && expectedOutput) {
-                  setAmount(expectedOutput.toString());
-                  setExpectedOutput(parseFloat(amount));
-                }
-                
-                setSwapHover((h) => !h);
-              }}
+              onClick={handleSwapTokens}
               style={{
                 display: "inline-flex",
                 background: "#0d0904",
@@ -426,6 +489,7 @@ const Dex = ({ coins = [] }) => {
             </MotionBox>
           </Flex>
 
+          {/* To Token Input */}
           <Box mb={3} bg="#18131c" borderRadius="lg" p={4} display="flex" flexDirection="column" gap={3}>
             <Flex justify="space-between" align="center">
               <Text color="#b0b0b0" fontSize="sm">You will receive</Text>
@@ -436,7 +500,7 @@ const Dex = ({ coins = [] }) => {
                 variant="unstyled"
                 type="number"
                 placeholder="0.0"
-                value={expectedOutput ? expectedOutput.toFixed(6) : "0.0"}
+                value={expectedOutput ? formatNumber(expectedOutput) : "0.0"}
                 isReadOnly
                 color="white"
                 fontSize="2xl"
@@ -449,19 +513,19 @@ const Dex = ({ coins = [] }) => {
                 px={4} 
                 py={2} 
                 _hover={{ bg: "#2a1833" }} 
-                onClick={onSecondModalOpen}
+                onClick={onToModalOpen}
                 display="flex"
                 alignItems="center"
                 justifyContent="center"
                 gap={2}
               >
-                <Image src={selectedCoin.imageUrl} boxSize={6} borderRadius="full" />
-                <Text>{selectedCoin.symbol}</Text>
+                <Image src={toToken.imageUrl} boxSize={6} borderRadius="full" />
+                <Text>{toToken.symbol}</Text>
                 <Icon as={MdOutlineKeyboardDoubleArrowDown} />
               </Button>
             </Flex>
             <Flex justify="space-between" color="#b0b0b0" fontSize="xs">
-              <Text>≈ ${(expectedOutput * (selectedCoin.symbol === "TON" ? tonPrice : 1)).toFixed(2)}</Text>
+              <Text>≈ ${(expectedOutput * (toToken.symbol === "TON" ? tonPrice : 1)).toFixed(2)}</Text>
             </Flex>
           </Box>
 
@@ -510,37 +574,38 @@ const Dex = ({ coins = [] }) => {
               onClick={handleSwap}
               isLoading={isLoading}
               loadingText="Swapping..."
+              isDisabled={!amount || isNaN(parseFloat(amount)) || parseFloat(amount) <= 0}
             >
-              Swap
+              {getSwapButtonText()}
             </MotionButton>
           )}
 
           {/* Info Section */}
           <Box mt={4} bg="#18131c" borderRadius="lg" p={4} color="white" fontSize="sm">
             <Flex align="center" mb={2}>
-              <Text fontWeight="bold" color="#ffe066">1 {selectedToken.symbol}</Text>
+              <Text fontWeight="bold" color="#ffe066">1 {fromToken.symbol}</Text>
               <Box mx={2} color="#ffe066">⇄</Box>
               <Text fontWeight="bold">
                 {amount && expectedOutput 
                   ? (expectedOutput / parseFloat(amount)).toFixed(4) 
-                  : getHardcodedRate(selectedToken.contractAddress, selectedCoin.contractAddress).toFixed(4)
-                } {selectedCoin.symbol}
+                  : getHardcodedRate(fromToken.contractAddress, toToken.contractAddress).toFixed(4)
+                } {toToken.symbol}
               </Text>
               <Spacer />
-              <Text color="#b0b0b0" fontSize="xs">Fee 0.01 TON</Text>
+              <Text color="#b0b0b0" fontSize="xs">Fee {gasFee.fee} TON</Text>
           </Flex>
             <Flex justify="space-between" color="#b0b0b0" fontSize="xs" mb={1}>
               <Text>Minimum received</Text>
               <Text color="white">
                 {expectedOutput 
-                  ? (expectedOutput * 0.995).toFixed(6) 
+                  ? (expectedOutput * (1 - slippage / 100)).toFixed(6) 
                   : '0'
-                } {selectedCoin.symbol}
+                } {toToken.symbol}
               </Text>
           </Flex>
             <Flex justify="space-between" color="#b0b0b0" fontSize="xs" mb={1}>
               <Text>Slippage tolerance</Text>
-              <Text color="#ffe066" fontWeight="bold">0.50%</Text>
+              <Text color="#ffe066" fontWeight="bold">{slippage.toFixed(2)}%</Text>
           </Flex>
             <Flex justify="space-between" color="#b0b0b0" fontSize="xs">
               <Text>Price impact</Text>
@@ -552,24 +617,24 @@ const Dex = ({ coins = [] }) => {
         </MotionBox>
       </Flex>
 
-      {/* Token Selection Modals */}
-      <Modal isCentered onClose={onClose} isOpen={isOpen} motionPreset="slideInBottom">
+      {/* From Token Selection Modal */}
+      <Modal isCentered onClose={onFromModalClose} isOpen={isFromModalOpen} motionPreset="slideInBottom">
         <ModalOverlay />
         <ModalContent bg="#18131c" color="white" borderRadius="2xl" maxW="360px">
           <ModalHeader>Select token</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <InputGroup mb={4}>
-                  <InputLeftElement>
+              <InputLeftElement>
                 <SearchIcon color="#e35b5b" />
-                  </InputLeftElement>
-                  <Input
+              </InputLeftElement>
+              <Input
                 border="2px solid #e35b5b"
-                    placeholder="Search assets or address"
-                    onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search assets or address"
+                onChange={(e) => handleSearch(e.target.value)}
                 color="white"
-                  />
-                </InputGroup>
+              />
+            </InputGroup>
             <Box maxH="260px" overflowY="auto">
               {filteredCoins && filteredCoins.length > 0 ? (
                 filteredCoins.map((coin, index) => (
@@ -581,7 +646,7 @@ const Dex = ({ coins = [] }) => {
                     px={2} 
                     borderRadius="md" 
                     _hover={{ bg: "#23202a", cursor: "pointer" }} 
-                    onClick={() => handleTokenSelection(coin)}
+                    onClick={() => handleFromTokenSelection(coin)}
                   >
                     <Image src={coin.imageUrl} boxSize={8} borderRadius="full" />
                     <Box>
@@ -596,28 +661,29 @@ const Dex = ({ coins = [] }) => {
             </Box>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={onClose} borderRadius="xl">Close</Button>
+            <Button colorScheme="red" mr={3} onClick={onFromModalClose} borderRadius="xl">Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
 
-      <Modal isCentered onClose={onSecondModalClose} isOpen={isSecondModalOpen} motionPreset="slideInBottom">
+      {/* To Token Selection Modal */}
+      <Modal isCentered onClose={onToModalClose} isOpen={isToModalOpen} motionPreset="slideInBottom">
         <ModalOverlay />
         <ModalContent bg="#18131c" color="white" borderRadius="2xl" maxW="360px">
           <ModalHeader>Select token</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
             <InputGroup mb={4}>
-                  <InputLeftElement>
+              <InputLeftElement>
                 <SearchIcon color="#e35b5b" />
-                  </InputLeftElement>
-                  <Input
+              </InputLeftElement>
+              <Input
                 border="2px solid #e35b5b"
-                    placeholder="Search assets or address"
-                    onChange={(e) => handleSearch(e.target.value)}
+                placeholder="Search assets or address"
+                onChange={(e) => handleSearch(e.target.value)}
                 color="white"
-                  />
-                </InputGroup>
+              />
+            </InputGroup>
             <Box maxH="260px" overflowY="auto">
               {filteredCoins && filteredCoins.length > 0 ? (
                 filteredCoins.map((coin, index) => (
@@ -629,7 +695,7 @@ const Dex = ({ coins = [] }) => {
                     px={2} 
                     borderRadius="md" 
                     _hover={{ bg: "#23202a", cursor: "pointer" }} 
-                    onClick={() => handleCoinSelection(coin)}
+                    onClick={() => handleToTokenSelection(coin)}
                   >
                     <Image src={coin.imageUrl} boxSize={8} borderRadius="full" />
                     <Box>
@@ -644,7 +710,7 @@ const Dex = ({ coins = [] }) => {
             </Box>
           </ModalBody>
           <ModalFooter>
-            <Button colorScheme="red" mr={3} onClick={onSecondModalClose} borderRadius="xl">Close</Button>
+            <Button colorScheme="red" mr={3} onClick={onToModalClose} borderRadius="xl">Close</Button>
           </ModalFooter>
         </ModalContent>
       </Modal>
@@ -652,4 +718,4 @@ const Dex = ({ coins = [] }) => {
   );
 };
 
-export default Dex;
+export default DexNew;

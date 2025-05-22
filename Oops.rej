@@ -1,0 +1,15 @@
+@@ -211,6 +211,14 @@
+     fetchPools();
+   }, []);
+ 
++  // Update filteredCoins when coins prop changes
++  useEffect(() => {
++    if (coins) {
++      console.log("Coins prop updated:", coins.length);
++      setFilteredCoins(coins);
++    }
++  }, [coins]);
++
+   // Get hardcoded rates for fallback when API calls fail
+   const getHardcodedRate = (fromAddress, toAddress) => {
+     // Determine symbols based on addresses
