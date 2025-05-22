@@ -1,5 +1,4 @@
 import { useTonConnectUI, useTonAddress } from "@tonconnect/ui-react";
-
 import { Sender, SenderArguments } from "@ton/core";
 
 export function useTonConnect(): {
@@ -9,9 +8,13 @@ export function useTonConnect(): {
 } {
   const [tonConnectUI] = useTonConnectUI();
   const TONAddress = useTonAddress(true);
+
   return {
     sender: {
       send: async (args: SenderArguments) => {
+        if (!tonConnectUI) {
+          throw new Error("TON Connect UI not initialized");
+        }
         try {
           await tonConnectUI.sendTransaction({
             messages: [
@@ -24,12 +27,12 @@ export function useTonConnect(): {
             validUntil: Date.now() + 5 * 60 * 1000, // 5 minutes for user to approve
           });
         } catch (err) {
-          console.log(err);
+          console.error("Transaction error:", err);
+          throw err;
         }
       },
     },
-
-    connected: tonConnectUI?.connected,
-    userAddress: TONAddress,
+    connected: Boolean(tonConnectUI?.connected),
+    userAddress: TONAddress || "",
   };
 }
